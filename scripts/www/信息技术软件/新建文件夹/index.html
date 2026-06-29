@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>高一学测信息技术选择题练习</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: #f0f2f5;
+            padding: 16px;
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ===== 夜间模式 ===== */
+        body.dark-mode {
+            background: #0f0f1a;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        body.dark-mode .header h1 {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .header h1 span {
+            color: #facc15;
+        }
+
+        body.dark-mode .question-card {
+            background: #1e1e32;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+            border-color: #2d2d4a;
+        }
+
+        body.dark-mode .question-card.correct {
+            background: #0f2a1a;
+            border-left-color: #2ecc71;
+        }
+
+        body.dark-mode .question-card.wrong {
+            background: #2a0f0f;
+            border-left-color: #ef4444;
+        }
+
+        body.dark-mode .question-card.unanswered {
+            background: #2a1f0a;
+            border-left-color: #f59e0b;
+        }
+
+        body.dark-mode .question-number {
+            background: #2d2d5a;
+            color: #818cf8;
+        }
+
+        body.dark-mode .question-text {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .option-label {
+            border-color: #2d2d4a;
+            color: #cbd5e1;
+            background: #15152a;
+        }
+
+        body.dark-mode .option-label:hover:not(.disabled) {
+            border-color: #4a4a6a;
+            background: #1f1f3a;
+        }
+
+        body.dark-mode .option-label .letter {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .option-label.correct-answer {
+            border-color: #2ecc71;
+            background: #0f2a1a;
+        }
+
+        body.dark-mode .option-label.correct-answer .letter {
+            color: #2ecc71;
+        }
+
+        body.dark-mode .option-label.wrong-answer {
+            border-color: #ef4444;
+            background: #2a0f0f;
+        }
+
+        body.dark-mode .option-label.wrong-answer .letter {
+            color: #ef4444;
+        }
+
+        body.dark-mode .option-label.user-selected-wrong {
+            border-color: #ef4444;
+            background: #2a0f0f;
+        }
+
+        body.dark-mode .option-label.show-correct {
+            border-color: #2ecc71;
+            background: #0f2a1a;
+        }
+
+        body.dark-mode .option-label.disabled:hover {
+            border-color: #2d2d4a;
+            background: #15152a;
+        }
+
+        body.dark-mode .option-label.disabled.correct-answer:hover,
+        body.dark-mode .option-label.disabled.show-correct:hover {
+            border-color: #2ecc71;
+            background: #0f2a1a;
+        }
+
+        body.dark-mode .option-label.disabled.wrong-answer:hover,
+        body.dark-mode .option-label.disabled.user-selected-wrong:hover {
+            border-color: #ef4444;
+            background: #2a0f0f;
+        }
+
+        body.dark-mode .result-badge.correct {
+            background: #0f2a1a;
+            color: #2ecc71;
+        }
+
+        body.dark-mode .result-badge.wrong {
+            background: #2a0f0f;
+            color: #ef4444;
+        }
+
+        body.dark-mode .result-badge.unanswered {
+            background: #2a1f0a;
+            color: #f59e0b;
+        }
+
+        body.dark-mode .result-badge .answer-text {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .progress-text {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .progress-text strong {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .progress-bar-container {
+            background: #2d2d4a;
+        }
+
+        body.dark-mode .btn-reset {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.12);
+            color: #94a3b8;
+        }
+
+        body.dark-mode .btn-reset:hover {
+            background: rgba(255,255,255,0.15);
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .score-modal {
+            background: #1a1a30;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .score-modal .score-label {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .score-modal .score-detail {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .score-modal .score-detail strong {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .btn-close-score {
+            background: #2d2d5a;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .btn-close-score:hover {
+            background: #3d3d6a;
+        }
+
+        body.dark-mode .btn-close-score:active {
+            transform: scale(0.96);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transition: background 0.3s ease;
+        }
+
+        .header h1 {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            transition: color 0.3s ease;
+        }
+
+        .header h1 span {
+            color: #facc15;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .progress-text {
+            color: #94a3b8;
+            font-size: 13px;
+            transition: color 0.3s ease;
+        }
+
+        .progress-text strong {
+            color: #fff;
+            transition: color 0.3s ease;
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .btn:active {
+            transform: scale(0.94);
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            box-shadow: 0 4px 15px rgba(46,204,113,0.3);
+        }
+
+        .btn-check:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(46,204,113,0.4);
+        }
+
+        .btn-reset {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #94a3b8;
+        }
+
+        .btn-reset:hover {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        .btn-theme {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #94a3b8;
+            font-size: 16px;
+        }
+
+        .btn-theme:hover {
+            background: rgba(255,255,255,0.18);
+            color: #fff;
+        }
+
+        body.dark-mode .btn-theme {
+            background: rgba(255,255,255,0.12);
+            border-color: rgba(255,255,255,0.2);
+            color: #facc15;
+        }
+
+        body.dark-mode .btn-theme:hover {
+            background: rgba(255,255,255,0.22);
+            color: #facc15;
+        }
+
+        .btn-wrong-only {
+            background: rgba(239,68,68,0.15);
+            color: #f87171;
+            border: 1px solid rgba(239,68,68,0.15);
+        }
+
+        .btn-wrong-only:hover {
+            background: rgba(239,68,68,0.25);
+            color: #fca5a5;
+        }
+
+        .btn-unanswered-only {
+            background: rgba(245,158,11,0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245,158,11,0.15);
+        }
+
+        .btn-unanswered-only:hover {
+            background: rgba(245,158,11,0.25);
+            color: #fcd34d;
+        }
+
+        .btn-export {
+            background: rgba(59,130,246,0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59,130,246,0.15);
+        }
+
+        .btn-export:hover {
+            background: rgba(59,130,246,0.25);
+            color: #93bbfc;
+        }
+
+        .btn-random {
+            background: rgba(168,85,247,0.15);
+            color: #a78bfa;
+            border: 1px solid rgba(168,85,247,0.15);
+        }
+
+        .btn-random:hover {
+            background: rgba(168,85,247,0.25);
+            color: #c4b5fd;
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.06);
+            color: #94a3b8;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+        }
+
+        /* ===== 工具栏 ===== */
+        .toolbar {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .toolbar .label {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-right: 4px;
+        }
+
+        /* ===== 计时器 ===== */
+        .timer-display {
+            font-size: 14px;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .timer-display strong {
+            color: #facc15;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+        }
+
+        /* 题目卡片 */
+        .question-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            display: block;
+        }
+
+        .question-card.hidden {
+            display: none;
+        }
+
+        .question-card.correct {
+            border-left-color: #2ecc71;
+            background: #f0fdf4;
+        }
+
+        .question-card.wrong {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .question-card.unanswered {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .question-number {
+            display: inline-block;
+            background: #eef2ff;
+            color: #4f46e5;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.6;
+            color: #1e293b;
+            margin-bottom: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .question-text .highlight {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 15px;
+            color: #334155;
+            background: #fafbfc;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .option-label:hover:not(.disabled) {
+            border-color: #94a3b8;
+            background: #f1f5f9;
+            transform: translateX(2px);
+        }
+
+        .option-label input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2563eb;
+            cursor: pointer;
+            flex-shrink: 0;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .option-label .letter {
+            font-weight: 700;
+            color: #64748b;
+            min-width: 24px;
+            transition: color 0.3s ease;
+        }
+
+        /* 批改后样式 */
+        .option-label.correct-answer {
+            border-color: #2ecc71;
+            background: #d1fae5;
+        }
+
+        .option-label.correct-answer .letter {
+            color: #059669;
+        }
+
+        .option-label.wrong-answer {
+            border-color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .option-label.wrong-answer .letter {
+            color: #dc2626;
+        }
+
+        .option-label.user-selected-wrong {
+            border-color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .option-label.show-correct {
+            border-color: #2ecc71;
+            background: #d1fae5;
+        }
+
+        .option-label.disabled {
+            cursor: default;
+            opacity: 0.85;
+        }
+
+        .option-label.disabled:hover {
+            border-color: #e2e8f0;
+            background: #fafbfc;
+            transform: none;
+        }
+
+        .option-label.disabled.correct-answer:hover,
+        .option-label.disabled.show-correct:hover {
+            border-color: #2ecc71;
+            background: #d1fae5;
+        }
+
+        .option-label.disabled.wrong-answer:hover,
+        .option-label.disabled.user-selected-wrong:hover {
+            border-color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .result-badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin-top: 8px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .result-badge.correct {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .result-badge.wrong {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .result-badge.unanswered {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .result-badge .answer-text {
+            font-weight: 400;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        /* 得分弹窗 */
+        .score-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .score-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .score-modal {
+            background: white;
+            border-radius: 32px;
+            padding: 40px 48px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            animation: bounceIn 0.4s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            80% {
+                transform: scale(1.02);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .score-number {
+            font-size: 72px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2ecc71, #facc15);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+
+        .score-number.pass {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-number.fail {
+            background: linear-gradient(135deg, #ef4444, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-number.perfect {
+            background: linear-gradient(135deg, #facc15, #f59e0b, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: perfect-glow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes perfect-glow {
+            0%,
+            100% {
+                filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.3));
+            }
+            50% {
+                filter: drop-shadow(0 0 30px rgba(250, 204, 21, 0.6));
+            }
+        }
+
+        .score-label {
+            font-size: 18px;
+            color: #64748b;
+            margin-top: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .score-detail {
+            font-size: 14px;
+            color: #94a3b8;
+            margin: 16px 0 24px;
+            line-height: 1.8;
+            transition: color 0.3s ease;
+        }
+
+        .score-detail strong {
+            color: #1e293b;
+            transition: color 0.3s ease;
+        }
+
+        .btn-close-score {
+            background: #1e293b;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 40px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+
+        .btn-close-score:hover {
+            background: #0f172a;
+            transform: translateY(-2px);
+        }
+
+        .btn-close-score:active {
+            transform: scale(0.96);
+        }
+
+        /* 进度条 */
+        .progress-bar-container {
+            background: #e2e8f0;
+            border-radius: 20px;
+            height: 6px;
+            margin: 12px 0 4px;
+            overflow: hidden;
+            transition: background 0.3s ease;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, #2ecc71, #facc15);
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        /* ===== 统计详情 ===== */
+        .stats-detail {
+            display: none;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .stats-detail.show {
+            display: block;
+        }
+
+        .stats-detail .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .stats-detail .item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stats-detail .item .num {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .stats-detail .item .num.green {
+            color: #2ecc71;
+        }
+        .stats-detail .item .num.red {
+            color: #ef4444;
+        }
+        .stats-detail .item .num.yellow {
+            color: #f59e0b;
+        }
+        .stats-detail .item .num.blue {
+            color: #60a5fa;
+        }
+
+        /* ===== 自定义确认弹窗 ===== */
+        .custom-confirm-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .custom-confirm-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .custom-confirm-box {
+            background: white;
+            border-radius: 24px;
+            padding: 32px 28px 24px;
+            max-width: 340px;
+            width: 90%;
+            text-align: center;
+            animation: bounceIn 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .custom-confirm-box {
+            background: #1a1a30;
+            color: #e2e8f0;
+        }
+
+        .custom-confirm-box .icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .custom-confirm-box .title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .custom-confirm-box .message {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        body.dark-mode .custom-confirm-box .message {
+            color: #94a3b8;
+        }
+
+        .custom-confirm-box .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .custom-confirm-box .btn-group .btn {
+            flex: 1;
+            justify-content: center;
+            padding: 10px 0;
+            font-size: 14px;
+            border-radius: 30px;
+        }
+
+        /* ===== 移动端 ===== */
+        @media (max-width: 640px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 14px 16px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .header h1 {
+                font-size: 16px;
+                text-align: center;
+            }
+
+            .header-info {
+                justify-content: center;
+            }
+
+            .btn {
+                padding: 6px 12px;
+                font-size: 11px;
+                min-height: 36px;
+                min-width: 44px;
+            }
+
+            .toolbar {
+                padding: 10px 12px;
+                justify-content: center;
+            }
+
+            .toolbar .label {
+                font-size: 11px;
+            }
+
+            .question-card {
+                padding: 14px 16px;
+            }
+
+            .question-text {
+                font-size: 14px;
+            }
+
+            .option-label {
+                padding: 8px 12px;
+                font-size: 13px;
+                min-height: 44px;
+            }
+
+            .option-label input[type="radio"] {
+                width: 20px;
+                height: 20px;
+            }
+
+            .score-modal {
+                padding: 24px 20px;
+            }
+
+            .score-number {
+                font-size: 48px;
+            }
+
+            .timer-display {
+                font-size: 12px;
+            }
+
+            .timer-display strong {
+                font-size: 14px;
+            }
+
+            .stats-detail .row {
+                gap: 10px;
+            }
+
+            .stats-detail .item {
+                font-size: 12px;
+            }
+
+            .progress-text {
+                font-size: 12px;
+            }
+
+            .custom-confirm-box {
+                padding: 24px 20px;
+            }
+        }
+
+        @media print {
+            .btn-check,
+            .btn-reset,
+            .btn-theme,
+            .btn-wrong-only,
+            .btn-unanswered-only,
+            .btn-export,
+            .btn-random,
+            .btn-back,
+            .toolbar,
+            .score-overlay,
+            .stats-detail,
+            .custom-confirm-overlay {
+                display: none !important;
+            }
+            .question-card {
+                break-inside: avoid;
+                border: 1px solid #e2e8f0;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 头部 -->
+    <div class="header">
+        <h1>📝 信息技术 <span>选择题</span> 练完不用高一见 搜51有惊喜</h1>
+        <div class="header-info">
+            <span class="progress-text">已答: <strong id="answeredCount">0</strong> / <strong id="totalCount">0</strong></span>
+            <div style="width:100px;">
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+            </div>
+            <span class="timer-display">⏱️ <strong id="timerDisplay">00:00</strong></span>
+            <button class="btn btn-check" id="checkBtn" type="button">✅ 批改</button>
+            <button class="btn btn-reset" id="resetBtn" type="button">🔄 重置</button>
+            <button class="btn btn-theme" id="themeBtn" type="button" title="切换夜间模式">🌙</button>
+        </div>
+    </div>
+
+    <!-- ===== 工具栏 ===== -->
+    <div class="toolbar">
+        <span class="label">🔍 筛选:</span>
+        <button class="btn btn-secondary" style="background:rgba(255,255,255,0.06);color:#94a3b8;border:none;padding:4px 14px;border-radius:20px;font-size:12px;cursor:pointer;touch-action:manipulation;" data-filter="all" id="filterAll">全部</button>
+        <button class="btn btn-secondary" style="background:rgba(255,255,255,0.06);color:#94a3b8;border:none;padding:4px 14px;border-radius:20px;font-size:12px;cursor:pointer;touch-action:manipulation;" data-filter="unanswered" id="filterUnanswered">未答</button>
+        <button class="btn btn-secondary" style="background:rgba(255,255,255,0.06);color:#94a3b8;border:none;padding:4px 14px;border-radius:20px;font-size:12px;cursor:pointer;touch-action:manipulation;" data-filter="wrong" id="filterWrong">错题</button>
+        <button class="btn btn-secondary" style="background:rgba(255,255,255,0.06);color:#94a3b8;border:none;padding:4px 14px;border-radius:20px;font-size:12px;cursor:pointer;touch-action:manipulation;" data-filter="correct" id="filterCorrect">正确</button>
+        <span style="color:#475569;font-size:12px;">|</span>
+        <button class="btn btn-random" id="randomBtn" type="button">🎲 随机抽题</button>
+        <button class="btn btn-wrong-only" id="wrongOnlyBtn" type="button">❌ 只看错题</button>
+        <button class="btn btn-unanswered-only" id="unansweredOnlyBtn" type="button">⏳ 只看未答</button>
+        <span style="color:#475569;font-size:12px;">|</span>
+        <button class="btn btn-export" id="exportBtn" type="button">📤 导出错题</button>
+        <button class="btn btn-back" id="backBtn" type="button">🏠 返回</button>
+    </div>
+
+    <!-- ===== 统计详情 ===== -->
+    <div class="stats-detail" id="statsDetail">
+        <div class="row">
+            <span class="item">✅ 正确: <span class="num green" id="statCorrect">0</span></span>
+            <span class="item">❌ 错误: <span class="num red" id="statWrong">0</span></span>
+            <span class="item">⏳ 未答: <span class="num yellow" id="statUnanswered">0</span></span>
+            <span class="item">📊 正确率: <span class="num blue" id="statRate">0%</span></span>
+            <span class="item">⏱️ 用时: <span class="num blue" id="statTime">00:00</span></span>
+        </div>
+    </div>
+
+    <!-- 题目列表 -->
+    <div id="questionsContainer"></div>
+</div>
+
+<!-- ===== 得分弹窗 ===== -->
+<div class="score-overlay" id="scoreOverlay">
+    <div class="score-modal">
+        <div class="score-number" id="scoreNumber">0</div>
+        <div class="score-label" id="scoreLabel">得分</div>
+        <div class="score-detail" id="scoreDetail">正确 0 题，错误 0 题，未答 0 题</div>
+        <button class="btn-close-score" id="closeScoreBtn" type="button">查看详情</button>
+    </div>
+</div>
+
+<!-- ===== 自定义确认弹窗 ===== -->
+<div class="custom-confirm-overlay" id="customConfirm">
+    <div class="custom-confirm-box">
+        <div class="icon" id="confirmIcon">⚠️</div>
+        <div class="title" id="confirmTitle">提示</div>
+        <div class="message" id="confirmMessage">确定要执行此操作吗？</div>
+        <div class="btn-group">
+            <button class="btn btn-secondary" id="confirmCancel" type="button">取消</button>
+            <button class="btn btn-check" id="confirmOk" type="button">确定</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== 自定义确认弹窗 ====================
+    var confirmResolve = null;
+
+    function customConfirm(title, message, icon) {
+        return new Promise(function(resolve) {
+            document.getElementById('confirmIcon').textContent = icon || '⚠️';
+            document.getElementById('confirmTitle').textContent = title || '提示';
+            document.getElementById('confirmMessage').textContent = message || '确定要执行此操作吗？';
+            document.getElementById('customConfirm').classList.add('active');
+            confirmResolve = resolve;
+        });
+    }
+
+    document.getElementById('confirmOk').addEventListener('click', function() {
+        document.getElementById('customConfirm').classList.remove('active');
+        if (confirmResolve) {
+            confirmResolve(true);
+            confirmResolve = null;
+        }
+    });
+
+    document.getElementById('confirmCancel').addEventListener('click', function() {
+        document.getElementById('customConfirm').classList.remove('active');
+        if (confirmResolve) {
+            confirmResolve(false);
+            confirmResolve = null;
+        }
+    });
+
+    // 点击遮罩关闭（相当于取消）
+    document.getElementById('customConfirm').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('active');
+            if (confirmResolve) {
+                confirmResolve(false);
+                confirmResolve = null;
+            }
+        }
+    });
+
+    // ==================== 去重后的题库（共 70 道） ====================
+    var questions = [
+        { id: 1, text: '文档、数据、图形图像、音视频等信息属于信息系统的（ ）要素。', options: ['A. 硬件', 'B. 软件', 'C. 通信网络', 'D. 信息资源'], answer: 3 },
+        { id: 2, text: '内存主要用于存储需要由CPU直接存取的数据，其中RAM是（ ）。', options: ['A. 读写存储器', 'B. 随机存取存储器', 'C. 只读存储器', 'D. 高速缓冲存储器'], answer: 1 },
+        { id: 3, text: '小明同学用AI绘制了一张图片，他想将该图片文件加密分享给其他同学，以下操作最合理的是（ ）。', options: ['A. 使用WinRAR压缩并设置密码', 'B. 将文件扩展名修改为.rar', 'C. 调整图像分辨率', 'D. 将文件属性设为只读'], answer: 0 },
+        { id: 4, text: '下面为即时通信软件的是（ ）。', options: ['A. QQ浏览器', 'B. QQ', 'C. 微信公众号', 'D. Firefox'], answer: 1 },
+        { id: 5, text: 'POP3协议主要用于（ ）。', options: ['A. 发送电子邮件', 'B. 接收电子邮件', 'C. 接收和发送电子邮件', 'D. 以上都不是'], answer: 1 },
+        { id: 6, text: '智慧城市由组成城市的不同的智慧组织构成，利用物联网、大数据、云计算等技术对传统的城市进行改造和升级，形成能够连接一切的更高效、安全、宜居的新一代信息化城市。以下不是构成智慧城市关键要素的是（ ）。', options: ['A. 智慧家居', 'B. 智慧政务', 'C. 智慧交通', 'D. 智慧医疗'], answer: 0 },
+        { id: 7, text: '执行语句print(2**4)，输出的结果是（ ）。', options: ['A. 2', 'B. 4', 'C. 8', 'D. 16'], answer: 3 },
+        { id: 8, text: 's="True"，此时s的类型是（ ）。', options: ['A. 整数', 'B. 浮点数', 'C. 字符串', 'D. 布尔值'], answer: 2 },
+        { id: 9, text: '快递公司根据不同的重量、距离计算费用，它的程序结构是（ ）。', options: ['A. 顺序结构', 'B. 选择结构', 'C. 循环结构', 'D. 都不是'], answer: 1 },
+        { id: 10, text: '"a = a + 1"在程序中的作用是（ ）。', options: ['A. 比较a和a+1的大小', 'B. 将a的值加1后赋给a', 'C. 输出a+1的值', 'D. 无意义'], answer: 1 },
+        { id: 11, text: '下列关于压缩的说法，有错的是（ ）。', options: ['A. 无损压缩允许在压缩过程中损失一定的信息以减少数据量', 'B. 无损压缩广泛应用于文本的压缩', 'C. 有损压缩不能完全恢复原始数据，会产生失真', 'D. 有损压缩广泛应用于语音、图像和视频数据的压缩'], answer: 0 },
+        { id: 12, text: '以下不属于常用身份验证方式的是（ ）。', options: ['A. 密码验证', 'B. 智能卡、门禁卡等信任物验证', 'C. 姓名验证', 'D. 生物特征验证'], answer: 2 },
+        { id: 13, text: '以下说法不正确的是（ ）。', options: ['A. 信息技术已经渗透到生活的方方面面，因此防范信息安全威胁是每个人的责任。', 'B. 人为失误是指行为人主观没有恶意而造成的信息安全威胁。', 'C. 信息安全非常重要，因此各大企业、军队、政府需要特别注意防范信息安全威胁，个人可以忽略不计。', 'D. 网络诈骗、网络谣言都属于信息安全威胁。'], answer: 2 },
+        { id: 14, text: '人工智能的目的是让机器能够（ ），以实现某些脑力劳动的机械化。', options: ['A. 具有完全的智能', 'B. 和人脑一样考虑问题', 'C. 完全代替人', 'D. 模拟、延伸和扩展人的智能'], answer: 3 },
+        { id: 15, text: '运算器和（ ）构成计算机的中央处理器（CPU）。', options: ['A. 内存', 'B. 外存', 'C. 控制器', 'D. 输入输出设备'], answer: 2 },
+        { id: 16, text: '下列选项中，属于个人自媒体资源的是（ ）。', options: ['A. 省级传媒期刊《中学生天地》', 'B. 小张同学在短视频平台发布的视频', 'C. 中国唱片集团有限公司发布的歌曲', 'D. 《人民日报》发布的文章《传承红色基因，培育时代新人》'], answer: 1 },
+        { id: 17, text: '在智能家居系统中，（ ）设备负责将智能灯光、扫地机器人、智能音箱等终端设备接入互联网。', options: ['A. 交换机', 'B. 防火墙', 'C. 调制解调器', 'D. 无线路由器'], answer: 3 },
+        { id: 18, text: '下列哪个语句在Python中无法实现对变量a增加1的操作（ ）。', options: ['A. a=a+1', 'B. a+=1', 'C. a=1+a', 'D. a++'], answer: 3 },
+        { id: 19, text: '在Python中，输入函数是（ ）。', options: ['A. print()', 'B. input()', 'C. scanf()', 'D. read()'], answer: 1 },
+        { id: 20, text: '以下代码的输出结果是（ ）。nums = [1,2,3] print(nums[1])', options: ['A. 1', 'B. 2', 'C. 3', 'D. 4'], answer: 1 },
+        { id: 21, text: '在体感游戏中，玩家手握游戏手柄，通过自己身体的动作控制游戏中人物的动作，"全身"投入到游戏当中，享受互动新体验，这体现了数字媒体技术（ ）的特点。', options: ['A. 数字化', 'B. 交互性', 'C. 集成性', 'D. 艺术性'], answer: 1 },
+        { id: 22, text: '硬件、网络和（ ）是人工智能运行的基本条件。', options: ['A. 数据', 'B. 程序', 'C. 软件', 'D. 输入输出设备'], answer: 0 },
+        { id: 23, text: '下列选项属于国产操作系统的是（ ）。', options: ['A. Windows 10', 'B. 鸿蒙', 'C. UNIX', 'D. iOS'], answer: 1 },
+        { id: 24, text: '下列选项属于压缩工具软件的是（ ）。', options: ['A. WinRAR', 'B. WPS', 'C. Photoshop', 'D. 画图'], answer: 0 },
+        { id: 25, text: '在人工智能图像识别系统中，某算法通过二进制像素矩阵处理图像数据，其中二进制数1101011用于表示某区域的特征编码。将该二进制数转换成十进制数，结果是（ ）。', options: ['A. 105', 'B. 107', 'C. 109', 'D. 111'], answer: 1 },
+        { id: 26, text: '智能手机已经成为日常生活中必备的工具之一，其中指纹解锁是物联网（ ）的相关技术。', options: ['A. 应用层', 'B. 网络层', 'C. 感知层', 'D. 传输层'], answer: 2 },
+        { id: 27, text: '所有计算机必须遵守一个共同协议（ ），才能实现与Internet相连接。', options: ['A. ICMP', 'B. TCP/IP', 'C. UDP', 'D. FTP'], answer: 1 },
+        { id: 28, text: '红外线测体温门用到物联网中的部件是（ ）。', options: ['A. 传感器', 'B. 存储器', 'C. CPU', 'D. 芯片'], answer: 0 },
+        { id: 29, text: '下列关于Python说法错误的是（ ）。', options: ['A. Python是一门面向对象语言。', 'B. Python广泛应用于人工智能领域。', 'C. Python具有丰富的第三方库。', 'D. Python只能在Windows操作系统下运行，不支持其它操作系统'], answer: 3 },
+        { id: 30, text: '列表a=[1]，在执行语句a+=[2,3]后，a的值是（ ）。', options: ['A. [1,2,3]', 'B. [6]', 'C. 6', 'D. 执行错误'], answer: 0 },
+        { id: 31, text: '以下代码的输出结果是（ ）。sum = 0 for i in range(1,4): sum += i print(sum)', options: ['A. 6', 'B. 10', 'C. 3', 'D. 12'], answer: 0 },
+        { id: 32, text: '医生可以利用（ ）进行手术模拟训练，可任意观察实验现场并进行多次重复操作。', options: ['A. 虚拟现实技术', 'B. 增强现实技术', 'C. 大数据处理技术', 'D. 影视编辑技术'], answer: 0 },
+        { id: 33, text: '能采用撞库获得敏感数据的主要原因是（ ）。', options: ['A. 数据库没有采用安全防护措施', 'B. 用户在不同网站设置相同的用户名和密码', 'C. 数据库安全防护措施弱', 'D. 利益驱使'], answer: 1 },
+        { id: 34, text: '以下哪个不是计算机病毒的特点（ ）。', options: ['A. 传播性', 'B. 破坏性', 'C. 潜伏性', 'D. 可恢复性'], answer: 3 },
+        { id: 35, text: '为了辨认某植物是不是向日葵，将向日葵的定义和特征输入计算机，计算机再通过拍摄的植物照片对比，辨认出向日葵，这种学习方式被称为（ ）。', options: ['A. 有监督学习', 'B. 无监督学习', 'C. 半监督学习', 'D. 关联规则学习'], answer: 0 },
+        { id: 36, text: '下列选项中，不属于第三代计算机应用领域的是（ ）。', options: ['A. 科学计算', 'B. 数据处理', 'C. 人工智能', 'D. 过程控制'], answer: 2 },
+        { id: 37, text: '下列选项属于输入设备的是（ ）。', options: ['A. 扫描仪', 'B. 打印机', 'C. 投影仪', 'D. 绘图仪'], answer: 0 },
+        { id: 38, text: '目前，最为常用的两类网络通信工具是（ ）。', options: ['A. 电子邮件和即时通信软件', 'B. 电子邮件和微博', 'C. 即时通信软件和微博', 'D. QQ和微信'], answer: 0 },
+        { id: 39, text: 'Internet的前身是（ ）。', options: ['A. 令牌网络', 'B. ARPAnet', 'C. LAN', 'D. Intranet'], answer: 1 },
+        { id: 40, text: '计算机语言经历了由低级到高级的过程，按发展过程，以下顺序正确的是（ ）。', options: ['A. 机器语言、汇编语言、高级语言', 'B. 汇编语言、机器语言、高级语言', 'C. 高级语言、汇编语言、机器语言', 'D. 机器语言、高级语言、汇编语言'], answer: 0 },
+        { id: 41, text: '下列不属于算法特征的是（ ）。', options: ['A. 确定性', 'B. 无限性', 'C. 输入项', 'D. 输出项'], answer: 1 },
+        { id: 42, text: '作为个人，应增强信息安全意识，安全规范地使用信息系统，做好（ ），避免因人为因素带来的信息安全风险。', options: ['A. 数据备份', 'B. 安全使用网络', 'C. 安全使用信息设备', 'D. 谨慎保护数据'], answer: 0 },
+        { id: 43, text: '如果未经授权的实体得到了数据的访问权，这属于破坏了信息的（ ）。', options: ['A. 可用性', 'B. 完整性', 'C. 保密性', 'D. 可控性'], answer: 2 },
+        { id: 44, text: '当扫地机器人行进至台阶边缘时，（ ）利用超声波测得扫地机器人与地面之间的距离，当超过限定值时，向控制器发送信号，控制器控制扫地机器人进行转向。改变扫地机器人前进方向，从而实现防止跌落的目的。', options: ['A. 驱动装置', 'B. 控制器', 'C. 运算器', 'D. 传感器'], answer: 3 },
+        { id: 45, text: '某同学想要连接有线网络，应该选择台式计算机上（ ）插入自己的网线。', options: ['A. RJ-45接口', 'B. VGA接口', 'C. USB接口', 'D. HDMI接口'], answer: 0 },
+        { id: 46, text: '某同学想要购买笔记本电脑，不适合查看的网站是（ ）。', options: ['A. 中关村在线', 'B. IT168', 'C. 爱奇艺', 'D. 太平洋电脑网'], answer: 2 },
+        { id: 47, text: 'www.sina.com.cn该网址的一级域名为（ ）。', options: ['A. www', 'B. sina', 'C. com', 'D. cn'], answer: 3 },
+        { id: 48, text: '描述"55≤x<100"表达式为（ ）。', options: ['A. x>=55 and x<=100', 'B. x>=55 or x<100', 'C. x>=55 and x<100', 'D. x<55 and x>=100'], answer: 2 },
+        { id: 49, text: '算法流程图中表示判断的图形符号是（ ）。', options: ['A. 矩形框', 'B. 菱形框', 'C. 平行四边形框', 'D. 圆角矩形框'], answer: 1 },
+        { id: 50, text: '设有以下程序段，循环执行次数是（ ）。i=20 while i<20: i-=1', options: ['A. 20', 'B. 0', 'C. 无限次', 'D. 1'], answer: 1 },
+        { id: 51, text: '以下符合安全使用信息系统的行为有（ ）。', options: ['A. 小陈收到银行卡密码失效的短信时，立刻打开了短信自带的链接。', 'B. 小钱看到二维码总是喜欢扫一扫。', 'C. 小周手机上的所有APP都开启了定位功能。', 'D. 小何的手机开启了自动更新系统的功能。'], answer: 3 },
+        { id: 52, text: '在信息系统中，用（ ）的形式来表示信息。', options: ['A. 十进制', 'B. 二进制', 'C. 十六进制', 'D. 字符'], answer: 1 },
+        { id: 53, text: '已知一支水笔2元，你现在有n元，最多可以买多少支水笔，下列表达式在Python中正确的是（ ）。', options: ['A. n//2', 'B. n%2', 'C. n/2', 'D. n**2'], answer: 0 },
+        { id: 54, text: '某公园对8岁及以下的儿童和70岁及以上的老人免票，如果年龄变量用age来表示，以下语句能正确表示的是（ ）。', options: ['A. if age<=8 or age>=70:', 'B. if age<=8:', 'C. if age<=8 and age>=70:', 'D. if age>=70:'], answer: 0 },
+        { id: 55, text: '当采用两种以上的方式进行身份验证，被称为（ ）。', options: ['A. 双向验证', 'B. 双因子验证', 'C. 动态口令验证', 'D. 基于独一无二的特征综合验证'], answer: 1 },
+        { id: 56, text: '要计算1到10的和，以下程序段中，下划线处应填写（ ）。s=0 for i in range(______): s+=i print(s)', options: ['A. 0', 'B. 9', 'C. 10', 'D. 11'], answer: 3 },
+        { id: 57, text: '以下程序的输出结果是（ ）。a=1 if a>0: a=a+1 else: a=a-1 print(a)', options: ['A. 1', 'B. 2', 'C. 3', 'D. 没有输出'], answer: 1 },
+        { id: 58, text: '有关动画的描述不正确的是（ ）。', options: ['A. 动画利用了人眼的视觉暂留特性', 'B. 当画面刷新率达到24帧/秒，人眼看到的是连续的画面效果', 'C. GIF闪图不属于计算机动画', 'D. 计算机动画通常分二维动画和三维动画'], answer: 2 },
+        { id: 59, text: '防火墙的一般功能不包括（ ）。', options: ['A. 限制未授权的用户进入内部网络', 'B. 防止入侵者对系统的访问', 'C. 限制内部用户访问特殊站点', 'D. 检查系统配置的正确性和安全漏洞'], answer: 2 },
+        { id: 60, text: '下面四种静态图像文件在Internet上大量使用的是（ ）。', options: ['A. SWF', 'B. TIF', 'C. BMP', 'D. JPG'], answer: 3 },
+        { id: 61, text: '要把学校行政楼和实验楼的局域网互连，可以通过（ ）实现。', options: ['A. 交换机', 'B. Modem', 'C. 路由器', 'D. 网卡'], answer: 0 },
+        { id: 62, text: '同学甲用手机APP打开一辆共享单车，以下流程正确的是（ ）。①甲用手机APP扫描二维码 ②甲在APP上确认开锁 ③服务器接收到开锁请求 ④开锁成功 ⑤服务器向单车发送开锁命令', options: ['A. ①②③⑤④', 'B. ①⑤③②④', 'C. ①③④⑤②', 'D. ①②④③⑤'], answer: 0 },
+        { id: 63, text: '以下程序段的输出结果是（ ）。a=0 if a>0: a=a+1 else: a=a-1 print(a)', options: ['A. -1', 'B. 0', 'C. 1', 'D. 2'], answer: 0 },
+        { id: 64, text: '各级各类政府部门发布的专业报告、公开的政策文件等属于（ ）资源。', options: ['A. 政府信息资源', 'B. 行业企业信息资源', 'C. 个人自媒体资源', 'D. 大众传媒资源'], answer: 0 },
+        { id: 65, text: '网上购物平台类型很多，淘宝网属于（ ）。', options: ['A. C2C', 'B. C2B', 'C. B2B', 'D. B2C'], answer: 0 },
+        { id: 66, text: '以下程序段的输出结果是（ ）。for i in range(10): print(i)', options: ['A. 依次输出1到10', 'B. 输出1加到10的和', 'C. 输出9', 'D. 依次输出0到9'], answer: 3 },
+        { id: 67, text: 'Windows10操作系统下，计算机设备界面无法调整的内容是（ ）。', options: ['A. 时间和日期', 'B. 分辨率', 'C. 硬盘容量大小', 'D. 桌面壁纸'], answer: 2 },
+        { id: 68, text: '尽管IPv6协议已开始使用，但（ ）协议仍然是当前普遍使用的IP协议。', options: ['A. IPv2', 'B. IPv3', 'C. IPv4', 'D. IPv5'], answer: 2 },
+        { id: 69, text: '同学甲家里来客人了，甲要泡茶招待客人。已知去买茶叶大约需要5分钟，洗杯子（冷水）大约需要3分钟，烧热水大约需要8分钟，为了更节约时间，应该先做哪件事（ ）。', options: ['A. 买茶叶', 'B. 洗杯子', 'C. 烧热水', 'D. 都一样'], answer: 2 },
+        { id: 70, text: '设有以下程序段，循环执行次数是（ ）。i=20 while i<20: i-=1', options: ['A. 20', 'B. 0', 'C. 无限次', 'D. 1'], answer: 1 }
+    ];
+
+    // ==================== 主逻辑 ====================
+    var userAnswers = new Array(questions.length).fill(null);
+    var isChecked = false;
+    var scoreData = null;
+    var isDarkMode = false;
+    var currentFilter = 'all';
+    var timerSeconds = 0;
+    var timerInterval = null;
+    var isTimerRunning = false;
+
+    var container = document.getElementById('questionsContainer');
+    var answeredCount = document.getElementById('answeredCount');
+    var totalCount = document.getElementById('totalCount');
+    var progressFill = document.getElementById('progressFill');
+    var timerDisplay = document.getElementById('timerDisplay');
+    var checkBtn = document.getElementById('checkBtn');
+    var resetBtn = document.getElementById('resetBtn');
+    var themeBtn = document.getElementById('themeBtn');
+    var scoreOverlay = document.getElementById('scoreOverlay');
+    var scoreNumber = document.getElementById('scoreNumber');
+    var scoreLabel = document.getElementById('scoreLabel');
+    var scoreDetail = document.getElementById('scoreDetail');
+    var closeScoreBtn = document.getElementById('closeScoreBtn');
+    var statsDetail = document.getElementById('statsDetail');
+    var statCorrect = document.getElementById('statCorrect');
+    var statWrong = document.getElementById('statWrong');
+    var statUnanswered = document.getElementById('statUnanswered');
+    var statRate = document.getElementById('statRate');
+    var statTime = document.getElementById('statTime');
+
+    var filterAll = document.getElementById('filterAll');
+    var filterUnanswered = document.getElementById('filterUnanswered');
+    var filterWrong = document.getElementById('filterWrong');
+    var filterCorrect = document.getElementById('filterCorrect');
+    var wrongOnlyBtn = document.getElementById('wrongOnlyBtn');
+    var unansweredOnlyBtn = document.getElementById('unansweredOnlyBtn');
+    var randomBtn = document.getElementById('randomBtn');
+    var exportBtn = document.getElementById('exportBtn');
+    var backBtn = document.getElementById('backBtn');
+
+    var letters = ['A', 'B', 'C', 'D'];
+
+    // ==================== 计时器 ====================
+    function startTimer() {
+        if (isTimerRunning) return;
+        isTimerRunning = true;
+        timerInterval = setInterval(function() {
+            timerSeconds++;
+            updateTimerDisplay();
+        }, 1000);
+    }
+
+    function stopTimer() {
+        isTimerRunning = false;
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function resetTimer() {
+        stopTimer();
+        timerSeconds = 0;
+        updateTimerDisplay();
+        isTimerRunning = false;
+    }
+
+    function updateTimerDisplay() {
+        var m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+        var s = String(timerSeconds % 60).padStart(2, '0');
+        timerDisplay.textContent = m + ':' + s;
+        if (statTime) statTime.textContent = m + ':' + s;
+    }
+
+    function getTimeString() {
+        var m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+        var s = String(timerSeconds % 60).padStart(2, '0');
+        return m + ':' + s;
+    }
+
+    // ==================== 夜间模式 ====================
+    function toggleTheme() {
+        isDarkMode = !isDarkMode;
+        document.body.classList.toggle('dark-mode', isDarkMode);
+        themeBtn.innerHTML = isDarkMode ? '☀️' : '🌙';
+        localStorage.setItem('examTheme', isDarkMode ? 'dark' : 'light');
+    }
+
+    function loadThemePreference() {
+        var saved = localStorage.getItem('examTheme');
+        if (saved === 'dark') {
+            isDarkMode = true;
+            document.body.classList.add('dark-mode');
+            themeBtn.innerHTML = '☀️';
+        } else {
+            document.body.classList.remove('dark-mode');
+            themeBtn.innerHTML = '🌙';
+        }
+    }
+
+    // ==================== 统计更新 ====================
+    function updateStats() {
+        var correct = 0, wrong = 0, unanswered = 0;
+        userAnswers.forEach(function(ans, idx) {
+            if (ans === null) unanswered++;
+            else if (ans === questions[idx].answer) correct++;
+            else wrong++;
+        });
+        var total = questions.length;
+        var rate = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+        statCorrect.textContent = correct;
+        statWrong.textContent = wrong;
+        statUnanswered.textContent = unanswered;
+        statRate.textContent = rate + '%';
+    }
+
+    // ==================== 渲染 ====================
+    function renderQuestions() {
+        totalCount.textContent = questions.length;
+        var html = '';
+        questions.forEach(function(q, index) {
+            var selected = userAnswers[index];
+            var isAnswered = selected !== null;
+            var show = true;
+            if (currentFilter === 'unanswered' && isAnswered) show = false;
+            if (currentFilter === 'wrong' && (selected === null || selected === q.answer)) show = false;
+            if (currentFilter === 'correct' && (selected === null || selected !== q.answer)) show = false;
+
+            var hiddenClass = show ? '' : 'hidden';
+
+            html += `
+                <div class="question-card ${hiddenClass}" id="qcard_${index}" data-index="${index}" data-status="${isAnswered ? (selected === q.answer ? 'correct' : 'wrong') : 'unanswered'}">
+                    <div class="question-number">第 ${index + 1} 题</div>
+                    <div class="question-text">${q.text}</div>
+                    <div class="options" id="options_${index}">
+                        ${q.options.map(function(opt, oi) {
+                            return `
+                            <label class="option-label" id="opt_${index}_${oi}" data-q="${index}" data-opt="${oi}">
+                                <input type="radio" name="q_${index}" value="${oi}" ${selected === oi ? 'checked' : ''} ${isChecked ? 'disabled' : ''}>
+                                <span class="letter">${letters[oi]}.</span>
+                                <span>${opt.replace(/^[A-D]\.\s*/, '')}</span>
+                            </label>
+                        `}).join('')}
+                    </div>
+                    <div id="result_${index}"></div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+
+        // 使用事件委托绑定radio事件
+        container.addEventListener('change', function(e) {
+            var target = e.target;
+            if (target && target.tagName === 'INPUT' && target.type === 'radio') {
+                if (isChecked) return;
+                if (!isTimerRunning && !isChecked) {
+                    startTimer();
+                }
+                var qIndex = parseInt(target.name.replace('q_', ''));
+                var value = parseInt(target.value);
+                userAnswers[qIndex] = value;
+                updateProgress();
+                updateStats();
+                var resultDiv = document.getElementById('result_' + qIndex);
+                if (resultDiv) resultDiv.innerHTML = '';
+                var card = document.getElementById('qcard_' + qIndex);
+                if (card) {
+                    card.classList.remove('correct', 'wrong', 'unanswered');
+                    card.dataset.status = 'answered';
+                }
+                applyFilter();
+            }
+        });
+
+        if (isChecked && scoreData) {
+            showResults();
+        }
+
+        updateProgress();
+        updateStats();
+    }
+
+    // ==================== 筛选 ====================
+    function applyFilter() {
+        var cards = document.querySelectorAll('.question-card');
+        cards.forEach(function(card, index) {
+            var selected = userAnswers[index];
+            var isAnswered = selected !== null;
+            var isCorrect = isAnswered && selected === questions[index].answer;
+            var show = true;
+            if (currentFilter === 'unanswered' && isAnswered) show = false;
+            if (currentFilter === 'wrong' && (selected === null || isCorrect)) show = false;
+            if (currentFilter === 'correct' && (selected === null || !isCorrect)) show = false;
+            card.classList.toggle('hidden', !show);
+        });
+
+        document.querySelectorAll('[data-filter]').forEach(function(btn) {
+            btn.style.background = btn.dataset.filter === currentFilter ? 'rgba(250,204,21,0.2)' : 'rgba(255,255,255,0.06)';
+            btn.style.color = btn.dataset.filter === currentFilter ? '#facc15' : '#94a3b8';
+        });
+    }
+
+    function setFilter(filter) {
+        currentFilter = filter;
+        applyFilter();
+    }
+
+    // ==================== 只看错题/未答 ====================
+    function toggleWrongOnly() {
+        if (currentFilter === 'wrong') {
+            setFilter('all');
+        } else {
+            setFilter('wrong');
+        }
+    }
+
+    function toggleUnansweredOnly() {
+        if (currentFilter === 'unanswered') {
+            setFilter('all');
+        } else {
+            setFilter('unanswered');
+        }
+    }
+
+    // ==================== 随机抽题 ====================
+    function randomQuestion() {
+        if (isChecked) {
+            customConfirm('⚠️ 提示', '当前已批改，随机抽题将重置答题状态，确定吗？', '⚠️').then(function(ok) {
+                if (ok) {
+                    resetAll();
+                    doRandomJump();
+                }
+            });
+            return;
+        }
+        doRandomJump();
+    }
+
+    function doRandomJump() {
+        var randomIndex = Math.floor(Math.random() * questions.length);
+        var card = document.getElementById('qcard_' + randomIndex);
+        if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.style.transition = 'box-shadow 0.3s';
+            card.style.boxShadow = '0 0 0 4px rgba(250,204,21,0.4)';
+            setTimeout(function() {
+                card.style.boxShadow = '';
+            }, 2000);
+            showToast('🎲 已跳转到随机题目');
+        }
+    }
+
+    // ==================== 导出错题 ====================
+    function exportWrongQuestions() {
+        var wrongList = [];
+        questions.forEach(function(q, index) {
+            var userAns = userAnswers[index];
+            if (userAns !== null && userAns !== q.answer) {
+                var userLetter = letters[userAns];
+                var correctLetter = letters[q.answer];
+                wrongList.push({
+                    index: index + 1,
+                    text: q.text,
+                    userAnswer: userLetter,
+                    correctAnswer: correctLetter,
+                    options: q.options
+                });
+            }
+        });
+
+        if (wrongList.length === 0) {
+            showToast('🎉 没有错题，太棒了！');
+            return;
+        }
+
+        var content = '📝 错题集 - 信息技术学测\n';
+        content += '='.repeat(40) + '\n';
+        content += '生成时间: ' + new Date().toLocaleString() + '\n';
+        content += '共 ' + wrongList.length + ' 道错题\n';
+        content += '='.repeat(40) + '\n\n';
+
+        wrongList.forEach(function(w, i) {
+            content += '【第 ' + w.index + ' 题】 ' + w.text + '\n';
+            w.options.forEach(function(opt) {
+                var isUser = opt.startsWith(w.userAnswer + '.');
+                var isCorrect = opt.startsWith(w.correctAnswer + '.');
+                var mark = '';
+                if (isUser) mark = ' ❌ (你选的)';
+                if (isCorrect) mark = ' ✅ (正确答案)';
+                content += '  ' + opt + mark + '\n';
+            });
+            content += '\n';
+        });
+
+        content += '\n' + '='.repeat(40) + '\n';
+        content += '📌 加油复习，下次全对！';
+
+        var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        var link = document.createElement('a');
+        link.download = '错题集_' + new Date().toISOString().slice(0,10) + '.txt';
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(function() { URL.revokeObjectURL(link.href); }, 1000);
+
+        showToast('📤 已导出 ' + wrongList.length + ' 道错题');
+    }
+
+    // ==================== Toast ====================
+    function showToast(msg) {
+        var existing = document.querySelector('.toast-msg-custom');
+        if (existing) existing.remove();
+
+        var t = document.createElement('div');
+        t.className = 'toast-msg-custom';
+        t.style.cssText = `
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+            color: #fff; padding: 10px 24px; border-radius: 40px;
+            font-size: 14px; font-weight: 500; z-index: 9999;
+            animation: toastFade 2s forwards; max-width: 90%; text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        `;
+        t.textContent = msg;
+        document.body.appendChild(t);
+
+        setTimeout(function() {
+            if (t.parentNode) t.remove();
+        }, 2000);
+    }
+
+    // Toast动画
+    var toastStyle = document.createElement('style');
+    toastStyle.textContent = `
+        @keyframes toastFade {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+    `;
+    document.head.appendChild(toastStyle);
+
+    // ==================== 进度更新 ====================
+    function updateProgress() {
+        var answered = userAnswers.filter(function(a) { return a !== null; }).length;
+        answeredCount.textContent = answered;
+        var pct = (answered / questions.length) * 100;
+        progressFill.style.width = pct + '%';
+    }
+
+    function getAnswerLetter(index) {
+        return letters[questions[index].answer];
+    }
+
+    // ==================== 批改 ====================
+    function checkAnswers() {
+        var answered = userAnswers.filter(function(a) { return a !== null; }).length;
+        if (answered === 0) {
+            showToast('⚠️ 请先完成答题！');
+            return;
+        }
+
+        var unanswered = questions.length - answered;
+        if (unanswered > 0) {
+            customConfirm('⚠️ 提示', '你还有 ' + unanswered + ' 题未作答，确定要提交批改吗？', '⚠️').then(function(ok) {
+                if (ok) {
+                    doCheck();
+                }
+            });
+            return;
+        }
+        doCheck();
+    }
+
+    function doCheck() {
+        stopTimer();
+        isChecked = true;
+        scoreData = calculateScore();
+        showResults();
+        showScoreModal();
+        updateStats();
+    }
+
+    function calculateScore() {
+        var correct = 0;
+        var wrong = 0;
+        var unanswered = 0;
+
+        questions.forEach(function(q, index) {
+            var userAns = userAnswers[index];
+            if (userAns === null) {
+                unanswered++;
+            } else if (userAns === q.answer) {
+                correct++;
+            } else {
+                wrong++;
+            }
+        });
+
+        return { correct: correct, wrong: wrong, unanswered: unanswered, total: questions.length };
+    }
+
+    function showResults() {
+        var data = scoreData || calculateScore();
+
+        questions.forEach(function(q, index) {
+            var userAns = userAnswers[index];
+            var isCorrect = userAns === q.answer;
+            var card = document.getElementById('qcard_' + index);
+            var resultDiv = document.getElementById('result_' + index);
+
+            if (!card || !resultDiv) return;
+
+            card.classList.remove('correct', 'wrong', 'unanswered');
+
+            document.querySelectorAll('#options_' + index + ' .option-label').forEach(function(label) {
+                var optIndex = parseInt(label.dataset.opt);
+                label.classList.remove('correct-answer', 'wrong-answer', 'user-selected-wrong', 'show-correct', 'disabled');
+                var radio = label.querySelector('input[type="radio"]');
+                if (radio) radio.disabled = true;
+
+                if (optIndex === q.answer) {
+                    label.classList.add('correct-answer');
+                }
+                if (userAns !== null && optIndex === userAns && userAns !== q.answer) {
+                    label.classList.add('user-selected-wrong');
+                }
+                label.classList.add('disabled');
+            });
+
+            if (userAns === null) {
+                card.classList.add('unanswered');
+                card.dataset.status = 'unanswered';
+                resultDiv.innerHTML =
+                    '<span class="result-badge unanswered">⏳ 未作答 <span class="answer-text">(正确答案: ' + getAnswerLetter(index) + ')</span></span>';
+            } else if (isCorrect) {
+                card.classList.add('correct');
+                card.dataset.status = 'correct';
+                resultDiv.innerHTML = '<span class="result-badge correct">✅ 正确</span>';
+            } else {
+                card.classList.add('wrong');
+                card.dataset.status = 'wrong';
+                resultDiv.innerHTML =
+                    '<span class="result-badge wrong">❌ 错误 <span class="answer-text">(正确答案: ' + getAnswerLetter(index) + ')</span></span>';
+            }
+        });
+
+        document.querySelectorAll('input[type="radio"]').forEach(function(input) {
+            input.disabled = true;
+        });
+
+        applyFilter();
+    }
+
+    function showScoreModal() {
+        var data = scoreData || calculateScore();
+        var pct = Math.round((data.correct / data.total) * 100);
+
+        scoreNumber.textContent = pct + '%';
+
+        if (pct === 100) {
+            scoreNumber.className = 'score-number perfect';
+            scoreLabel.textContent = '🏆 完美通关！';
+        } else if (pct >= 80) {
+            scoreNumber.className = 'score-number pass';
+            scoreLabel.textContent = '🎉 优秀！继续加油！';
+        } else if (pct >= 60) {
+            scoreNumber.className = 'score-number pass';
+            scoreLabel.textContent = '✅ 及格了，再接再厉！';
+        } else if (pct >= 30) {
+            scoreNumber.className = 'score-number fail';
+            scoreLabel.textContent = '📚 需要多复习哦！';
+        } else {
+            scoreNumber.className = 'score-number fail';
+            scoreLabel.textContent = '😅 别灰心，再来一次！';
+        }
+
+        scoreDetail.innerHTML = `
+            正确 <strong style="color:#2ecc71;">${data.correct}</strong> 题，
+            错误 <strong style="color:#ef4444;">${data.wrong}</strong> 题，
+            未答 <strong style="color:#f59e0b;">${data.unanswered}</strong> 题
+            <br>共 ${data.total} 题 · 用时 ${getTimeString()}
+        `;
+
+        statsDetail.classList.add('show');
+        updateStats();
+        statTime.textContent = getTimeString();
+
+        scoreOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // ==================== 重置 ====================
+    function resetAll() {
+        userAnswers = new Array(questions.length).fill(null);
+        isChecked = false;
+        scoreData = null;
+        resetTimer();
+        statsDetail.classList.remove('show');
+        renderQuestions();
+        updateProgress();
+        updateStats();
+        scoreOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+        setFilter('all');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        showToast('🔄 已重置，重新答题吧！');
+    }
+
+    // ==================== 返回首页 ====================
+    function goBack() {
+        if (document.referrer && document.referrer.includes(window.location.hostname)) {
+            window.history.back();
+        } else {
+            window.location.href = 'index.html';
+        }
+    }
+
+    // ==================== 绑定事件 ====================
+    // 使用 addEventListener 同时支持 click 和 touch（iOS 兼容）
+    function addButtonEvent(el, handler) {
+        if (!el) return;
+        el.addEventListener('click', handler);
+        el.addEventListener('touchstart', function(e) {
+            // 防止 iOS 上的双击缩放干扰
+        }, { passive: true });
+    }
+
+    addButtonEvent(checkBtn, checkAnswers);
+    addButtonEvent(resetBtn, resetAll);
+    addButtonEvent(themeBtn, toggleTheme);
+    addButtonEvent(closeScoreBtn, function() {
+        scoreOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+        var firstWrong = document.querySelector('.question-card.wrong');
+        if (firstWrong) {
+            firstWrong.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+
+    // 筛选
+    addButtonEvent(filterAll, function() { setFilter('all'); });
+    addButtonEvent(filterUnanswered, function() { setFilter('unanswered'); });
+    addButtonEvent(filterWrong, function() { setFilter('wrong'); });
+    addButtonEvent(filterCorrect, function() { setFilter('correct'); });
+    addButtonEvent(wrongOnlyBtn, toggleWrongOnly);
+    addButtonEvent(unansweredOnlyBtn, toggleUnansweredOnly);
+    addButtonEvent(randomBtn, randomQuestion);
+    addButtonEvent(exportBtn, exportWrongQuestions);
+    addButtonEvent(backBtn, goBack);
+
+    // 点击遮罩关闭得分弹窗
+    scoreOverlay.addEventListener('click', function(e) {
+        if (e.target === scoreOverlay) {
+            scoreOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // ==================== 键盘快捷键 ====================
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+            var active = document.activeElement;
+            if (active && active.tagName === 'INPUT' && active.type === 'radio') return;
+            if (!scoreOverlay.classList.contains('active')) {
+                checkBtn.click();
+            }
+        }
+        if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
+            resetBtn.click();
+        }
+        if (e.key === 't' && !e.ctrlKey && !e.metaKey) {
+            themeBtn.click();
+        }
+        if (e.key === 'w' && !e.ctrlKey && !e.metaKey) {
+            toggleWrongOnly();
+        }
+        if (e.key === 'u' && !e.ctrlKey && !e.metaKey) {
+            toggleUnansweredOnly();
+        }
+        if (e.key === 'a' && !e.ctrlKey && !e.metaKey) {
+            setFilter('all');
+        }
+        if (e.key === 'Escape' && scoreOverlay.classList.contains('active')) {
+            scoreOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // ==================== 初始化 ====================
+    loadThemePreference();
+    renderQuestions();
+    resetTimer();
+
+    console.log('📝 信息技术练习系统已加载 (iOS兼容版)');
+    console.log('📚 共 ' + questions.length + ' 道选择题');
+</script>
+</body>
+</html>
