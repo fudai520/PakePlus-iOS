@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>管理员后台 - 摸鱼商超</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d32f2f;
+        }
+        .title span {
+            background: #d32f2f;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 14px;
+            margin-left: 12px;
+        }
+        .back-btn {
+            background: #ff6f00;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-btn:hover {
+            background: #e06000;
+        }
+
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .password-card {
+            background: white;
+            border-radius: 32px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: bounceIn 0.3s ease;
+        }
+        .password-card h2 {
+            margin-bottom: 20px;
+            color: #d32f2f;
+        }
+        .password-card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .password-card input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 40px;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+            outline: none;
+        }
+        .password-card input:focus {
+            border-color: #ff6f00;
+        }
+        .password-card button {
+            background: #ff6f00;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .password-card button:hover {
+            background: #e06000;
+        }
+        .error-msg {
+            color: #d32f2f;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            80% { transform: scale(1.02); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 20px;
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .stat-item {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6f00;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            transition: 0.2s;
+            cursor: default;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .product-img {
+            height: 180px;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+        .product-info {
+            padding: 14px;
+        }
+        .product-name {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+        .product-price {
+            color: #ff6f00;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .product-category {
+            font-size: 12px;
+            color: #999;
+            margin-top: 6px;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .delete-btn:hover {
+            background: #b71c1c;
+            transform: scale(1.05);
+        }
+        .fixed-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #ff6f00;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .user-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #4caf50;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .empty-msg {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+            font-size: 16px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.85);
+            color: gold;
+            padding: 10px 24px;
+            border-radius: 40px;
+            z-index: 9999;
+            animation: fadeUp 1s forwards;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        @keyframes fadeUp {
+            0% { opacity: 0; bottom: 0; }
+            20% { opacity: 1; bottom: 50px; }
+            100% { opacity: 0; bottom: 120px; }
+        }
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #ff6f00;
+            font-size: 18px;
+        }
+        .admin-note {
+            background: #e8f4f8;
+            border-radius: 16px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #0066cc;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .content-wrapper {
+            display: none;
+        }
+        .content-wrapper.visible {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .product-grid { grid-template-columns: repeat(2,1fr); }
+            .header { flex-direction: column; text-align: center; }
+            .toast { white-space: normal; text-align: center; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="title">
+            🔧 管理员后台
+            <span>审核删除</span>
+        </div>
+        <a href="index.html" class="back-btn">← 返回商城</a>
+    </div>
+
+    <!-- 密码验证区域 -->
+    <div id="passwordOverlay" class="password-overlay">
+        <div class="password-card">
+            <h2>🔐 管理员验证</h2>
+            <p>请输入二级密码以继续操作</p>
+            <input type="password" id="adminPassword" placeholder="请输入密码" autocomplete="off">
+            <button onclick="verifyPassword()">验证登录</button>
+            <div id="passwordError" class="error-msg"></div>
+        </div>
+    </div>
+
+    <div id="contentWrapper" class="content-wrapper">
+        <div class="admin-note">
+            ⚠️ 温馨提示：只有【用户上传】的商品可以删除，固定商品（官方商品）不可删除。请审核用户上传的内容，删除违规商品。
+        </div>
+
+        <div class="stats-card" id="statsCard">
+            <div class="stat-item">
+                <span class="stat-label">总商品数：</span>
+                <span class="stat-number" id="totalCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">固定商品：</span>
+                <span class="stat-number" id="fixedCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">用户商品：</span>
+                <span class="stat-number" id="userCount">0</span>
+            </div>
+        </div>
+
+        <div class="product-grid" id="productGrid">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== 密码配置 ====================
+    const ADMIN_PASSWORD = "Aqqe198651";
+    
+    function verifyPassword() {
+        const password = document.getElementById('adminPassword').value;
+        const errorDiv = document.getElementById('passwordError');
+        
+        if (password === ADMIN_PASSWORD) {
+            document.getElementById('passwordOverlay').style.display = 'none';
+            document.getElementById('contentWrapper').classList.add('visible');
+            loadProducts();
+        } else {
+            errorDiv.innerText = '密码错误，请重试';
+            document.getElementById('adminPassword').value = '';
+        }
+    }
+
+    document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') verifyPassword();
+    });
+
+    // ==================== JSONBin 配置 ====================
+    const BIN_ID = "6a2a0fe1f5f4af5e29dc08f0";
+    const API_KEY = "$2a$10$4Rm.I7GQFIXrrSTyOH1U5eRIIELYyQcIU23rWb.mE9mtH.x0yCyBi";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+    // 固定商品数据（ID 1-29 的官方商品）
+    const fixedProducts = [
+        { id: 1, name: "AMD Ryzen 7 9800X3D", category: "CPU处理器", price: 4299, oldPrice: 4999, tag: "旗舰CPU", desc: "AMD旗舰游戏处理器", img: "1.jpg", sales: 2340, isFixed: true },
+        { id: 2, name: "Intel Core i5-12600KF", category: "CPU处理器", price: 1199, oldPrice: 1499, tag: "高性价比", desc: "热门中高端处理器", img: "2.jpg", sales: 5670, isFixed: true },
+        { id: 3, name: "Apple iPad Pro 2025", category: "平板电脑", price: 8999, oldPrice: 9999, tag: "新品", desc: "苹果旗舰平板", img: "3.jpg", sales: 1890, isFixed: true },
+        { id: 4, name: "Apple iPhone 17 Pro Max", category: "智能手机", price: 9999, oldPrice: 10999, tag: "热门", desc: "苹果旗舰手机", img: "4.jpg", sales: 8920, isFixed: true },
+        { id: 5, name: "Xiaomi Pad 8 Pro", category: "平板电脑", price: 2999, oldPrice: 3499, tag: "高性价比", desc: "小米高性能平板", img: "5.jpg", sales: 4350, isFixed: true },
+        { id: 6, name: "NVIDIA GeForce RTX 5090", category: "显卡", price: 19999, oldPrice: 22999, tag: "旗舰显卡", desc: "顶级游戏显卡", img: "6.jpg", sales: 890, isFixed: true },
+        { id: 7, name: "AMD Ryzen 5 7500F", category: "CPU处理器", price: 999, oldPrice: 1299, tag: "装机推荐", desc: "性价比游戏处理器", img: "7.jpg", sales: 7230, isFixed: true },
+        { id: 8, name: "NVIDIA GeForce RTX 5060", category: "显卡", price: 2499, oldPrice: 2999, tag: "甜品级显卡", desc: "2K游戏入门", img: "8.jpg", sales: 5680, isFixed: true },
+        { id: 9, name: "Apple Watch Series 11", category: "智能手表", price: 3299, oldPrice: 3999, tag: "新品", desc: "苹果智能手表", img: "9.jpg", sales: 3120, isFixed: true },
+        { id: 10, name: "Xiaomi 17 Pro Max", category: "智能手机", price: 4999, oldPrice: 5999, tag: "旗舰手机", desc: "小米旗舰手机", img: "10.jpg", sales: 6540, isFixed: true },
+        { id: 11, name: "联想拯救者 R9000P", category: "游戏本", price: 8999, oldPrice: 9999, tag: "电竞本", desc: "高性能游戏本", img: "11.jpg", sales: 4200, isFixed: true },
+        { id: 12, name: "直升机", category: "航空器", price: 3500000, oldPrice: 3800000, tag: "高端飞行器", desc: "经典民用直升机", img: "12.jpg", sales: 23, isFixed: true },
+        { id: 13, name: "兰博基尼", category: "跑车", price: 3200000, oldPrice: 3500000, tag: "超跑", desc: "兰博基尼V10跑车", img: "13.jpg", sales: 45, isFixed: true },
+        { id: 14, name: "保时捷", category: "跑车", price: 2500000, oldPrice: 2800000, tag: "性能旗舰", desc: "保时捷高性能跑车", img: "14.jpg", sales: 67, isFixed: true },
+        { id: 15, name: "DJI Mini 5 Pro", category: "无人机", price: 4999, oldPrice: 5499, tag: "热门新品", desc: "轻量化航拍无人机", img: "15.jpg", sales: 2100, isFixed: true },
+        { id: 16, name: "DJI Osmo Pocket 4", category: "运动相机", price: 3499, oldPrice: 3999, tag: "Vlog神器", desc: "便携云台相机", img: "16.jpg", sales: 1870, isFixed: true },
+        { id: 17, name: "九号电动车 N系列", category: "电动车", price: 4999, oldPrice: 5999, tag: "城市代步", desc: "智能电动自行车", img: "17.jpg", sales: 3400, isFixed: true },
+        { id: 18, name: "电动三轮车", category: "三轮车", price: 8999, oldPrice: 9999, tag: "实用代步", desc: "载货电动三轮车", img: "18.jpg", sales: 1200, isFixed: true },
+        { id: 19, name: "天然钻石 1克拉", category: "珠宝首饰", price: 58888, oldPrice: 68888, tag: "钻石", desc: "天然钻石首饰", img: "19.jpg", sales: 320, isFixed: true },
+        { id: 20, name: "威刚 XPG D35 DDR4 16GB×2", category: "电脑内存", price: 499, oldPrice: 699, tag: "内存条", desc: "32GB双通道内存", img: "20.jpg", sales: 4100, isFixed: true },
+        { id: 21, name: "DJI AIR 3S", category: "无人机", price: 9999, oldPrice: 11999, tag: "航拍旗舰", desc: "大疆最新航拍无人机，4K画质", img: "21.jpg", sales: 560, isFixed: true, isEasterTarget: true },
+        { id: 22, name: "宏碁 GM7 512G", category: "电脑内存", price: 299, oldPrice: 399, tag: "固态硬盘", desc: "PCIe 4.0高速固态硬盘", img: "22.jpg", sales: 3200, isFixed: true },
+        { id: 23, name: "软糖", category: "零食", price: 19, oldPrice: 29, tag: "甜蜜", desc: "Q弹可口的水果软糖", img: "23.jpg", sales: 8900, isFixed: true },
+        { id: 24, name: "薯片猫", category: "零食", price: 25, oldPrice: 35, tag: "喵星人", desc: "猫咪造型薯片，可爱又美味", img: "24.jpg", sales: 6700, isFixed: true },
+        { id: 25, name: "半岛铁盒机箱", category: "电脑配件", price: 399, oldPrice: 499, tag: "机箱", desc: "侧透玻璃机箱，支持ATX主板", img: "25.jpg", sales: 2100, isFixed: true },
+        { id: 26, name: "上海一套房（豪华）", category: "房产", price: 50000000, oldPrice: 80000000, tag: "豪宅", desc: "上海市中心豪华房产，江景房", img: "26.jpg", sales: 3, isFixed: true },
+        { id: 27, name: "蒙娜丽莎的微笑画像", category: "艺术品", price: 800000000, oldPrice: 1000000000, tag: "世界名画", desc: "达芬奇传世名作，限量1件", img: "27.jpg", sales: 1, isFixed: true },
+        { id: 28, name: "地球", category: "星球", price: 999999999999, oldPrice: 1999999999999, tag: "星球", desc: "整个地球！成为地球之主", img: "28.jpg", sales: 1, isFixed: true },
+        { id: 29, name: "给地球上所有人1块钱", category: "慈善", price: 8000000000, oldPrice: 10000000000, tag: "伟大壮举", desc: "给全球80亿人每人1元", img: "29.jpg", sales: 2, isFixed: true }
+    ];
+
+    let allProducts = [];
+    // 彩蛋点击计数器 (针对 DJI AIR 3S，完全隐藏，无任何提示)
+    let easterClickCount = 0;
+    let easterTimer = null;
+
+    // 获取用户商品（从云端读取）
+    async function getUserProducts() {
+        try {
+            const response = await fetch(API_URL, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            if (!response.ok) throw new Error('加载失败');
+            const data = await response.json();
+            if (data.record && data.record.products) return data.record.products;
+            if (data.products) return data.products;
+            return [];
+        } catch (error) {
+            console.error('加载用户商品失败:', error);
+            return [];
+        }
+    }
+
+    // 保存用户商品
+    async function saveUserProducts(products) {
+        const response = await fetch(API_URL, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': API_KEY
+            },
+            body: JSON.stringify({ products: products })
+        });
+        return response.ok;
+    }
+
+    // 加载并合并商品
+    async function loadProducts() {
+        try {
+            const userProducts = await getUserProducts();
+            console.log('用户商品数量:', userProducts.length);
+            
+            // 合并：用户商品 + 固定商品（用户商品放在前面）
+            allProducts = [...userProducts, ...fixedProducts];
+            
+            const fixedCount = fixedProducts.length;
+            const userCount = userProducts.length;
+            document.getElementById('totalCount').innerText = fixedCount + userCount;
+            document.getElementById('fixedCount').innerText = fixedCount;
+            document.getElementById('userCount').innerText = userCount;
+            
+            renderProducts();
+        } catch (error) {
+            console.error('加载失败:', error);
+            showToast('加载失败：' + error.message);
+        }
+    }
+
+    // 删除商品（只删除用户上传的）
+    window.deleteUserProduct = async function(productId) {
+        if (!confirm('⚠️ 确定要删除这个用户上传的商品吗？\n\n此操作不可恢复！')) return;
+        
+        try {
+            let products = await getUserProducts();
+            const deletedProduct = products.find(p => p.id === productId);
+            if (!deletedProduct) {
+                showToast('商品不存在或为官方商品，不可删除');
+                return;
+            }
+            products = products.filter(p => p.id !== productId);
+            await saveUserProducts(products);
+            await loadProducts();
+            showToast('✅ 已删除违规商品');
+        } catch (error) {
+            showToast('删除失败：' + error.message);
+        }
+    };
+
+    // 网盘链接地址
+    const PAN_URL = "https://1838588650.share.123865.com/123pan/8LsYTd-1g6R3";
+    
+    // 彩蛋触发函数：打开下载页面 (完全静默，无任何提示)
+    function openSecretDownloadPage() {
+        // 生成下载页面的 HTML 代码，第一个下载项替换为指定的网盘链接
+        const downloadHtml = [
+            '<!DOCTYPE html>',
+            '<html lang="zh-CN">',
+            '<head>',
+            '<meta charset="UTF-8">',
+            '<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">',
+            '<title>摸鱼资源下载中心 | 高速直链</title>',
+            '<style>',
+            '* { margin: 0; padding: 0; box-sizing: border-box; }',
+            'body { background: linear-gradient(135deg, #0B1120 0%, #111827 100%); font-family: "PingFang SC", "Microsoft YaHei", sans-serif; min-height: 100vh; padding: 30px 20px; }',
+            '.container { max-width: 900px; margin: 0 auto; }',
+            '.header { background: rgba(255,255,255,0.08); backdrop-filter: blur(12px); border-radius: 40px; padding: 28px 32px; margin-bottom: 30px; text-align: center; border: 1px solid rgba(46,204,113,0.3); }',
+            '.header h1 { font-size: 32px; background: linear-gradient(135deg, #FACC15, #FF8C42); -webkit-background-clip: text; background-clip: text; color: transparent; }',
+            '.header p { color: #94A3B8; margin-top: 10px; }',
+            '.stats-banner { background: #0F172A; border-radius: 28px; padding: 16px 24px; margin-bottom: 28px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; border: 1px solid #2D3A5E; }',
+            '.stat-card { text-align: center; }',
+            '.stat-value { font-size: 28px; font-weight: bold; color: #FACC15; }',
+            '.stat-label { font-size: 12px; color: #94A3B8; }',
+            '.download-list { background: #0F172A; border-radius: 32px; padding: 24px; border: 1px solid #2D3A5E; }',
+            '.download-item { background: #1E293B; border-radius: 24px; padding: 18px 24px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; transition: 0.2s; }',
+            '.download-item:hover { background: #2D3A5E; transform: translateX(6px); }',
+            '.file-info { display: flex; flex-direction: column; gap: 6px; }',
+            '.file-name { font-size: 18px; font-weight: bold; color: #E2E8F0; }',
+            '.file-meta { font-size: 12px; color: #94A3B8; }',
+            '.download-btn { background: linear-gradient(95deg, #2ECC71, #27AE60); border: none; padding: 10px 28px; border-radius: 40px; color: white; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; transition: 0.2s; text-align: center; }',
+            '.download-btn:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(46,204,113,0.4); }',
+            '.footer { text-align: center; margin-top: 30px; color: #475569; font-size: 12px; }',
+            '.back-link { display: inline-block; margin-top: 20px; color: #FACC15; text-decoration: none; cursor: pointer; }',
+            '.warning-note { background: rgba(255, 107, 107, 0.15); border-radius: 20px; padding: 12px 20px; margin-bottom: 20px; text-align: center; font-size: 13px; color: #FFB347; border-left: 4px solid #FF6B6B; }',
+            '@media (max-width: 600px) { .download-item { flex-direction: column; align-items: flex-start; } .download-btn { align-self: flex-start; } }',
+            '</style>',
+            '</head>',
+            '<body>',
+            '<div class="container">',
+            '<div class="header">',
+            '<h1>📦 摸鱼资源下载中心</h1>',
+            '<p>高速直链 · 永久有效 · 仅供内部使用</p>',
+            '</div>',
+            '<div class="stats-banner">',
+            '<div class="stat-card"><div class="stat-value">4</div><div class="stat-label">精品资源</div></div>',
+            '<div class="stat-card"><div class="stat-value">∞</div><div class="stat-label">不限速</div></div>',
+            '<div class="stat-card"><div class="stat-value">🔒</div><div class="stat-label">安全加密</div></div>',
+            '</div>',
+            '<div class="warning-note">⚠️ 资源来自123云盘分享，点击后将跳转至网盘页面，请根据提示下载</div>',
+            '<div class="download-list">',
+            // 第一个下载项 - 替换为网盘链接（蝴蝶.v1.2.8豪华版.zip）
+            '<div class="download-item">',
+            '<div class="file-info"><div class="file-name">🦋 蝴蝶.v1.2.8豪华版.zip</div><div class="file-meta">大小: 7.95 GB | 来源: 123云盘 | 免登录下载</div></div>',
+            '<a href="' + PAN_URL + '" class="download-btn" target="_blank" rel="noopener noreferrer">⬇️ 跳转网盘下载</a>',
+            '</div>',
+            // 其余下载项保持不变（作为备用演示）
+            '<div class="download-item">',
+            '<div class="file-info"><div class="file-name">🐟 摸鱼工具合集 (绿色版)</div><div class="file-meta">大小: 5.8 MB | 格式: EXE | 更新: 2025-01-20</div></div>',
+            '<a href="javascript:void(0)" class="download-btn" onclick="fakeDownload(\'摸鱼工具合集_绿色版\')">⬇️ 模拟下载</a>',
+            '</div>',
+            '<div class="download-item">',
+            '<div class="file-info"><div class="file-name">📖 摸鱼商超用户手册</div><div class="file-meta">大小: 1.2 MB | 格式: PDF | 更新: 2025-02-01</div></div>',
+            '<a href="javascript:void(0)" class="download-btn" onclick="fakeDownload(\'摸鱼商超用户手册\')">⬇️ 模拟下载</a>',
+            '</div>',
+            '<div class="download-item">',
+            '<div class="file-info"><div class="file-name">⚙️ 一键暴富脚本 (模拟器)</div><div class="file-meta">大小: 0.9 MB | 格式: JS | 更新: 2025-02-10</div></div>',
+            '<a href="javascript:void(0)" class="download-btn" onclick="fakeDownload(\'一键暴富脚本_模拟器\')">⬇️ 模拟下载</a>',
+            '</div>',
+            '</div>',
+            '<div class="footer">',
+            '<p>⚠️ 资源来自第三方网盘分享，仅供娱乐学习，请勿用于商业用途</p>',
+            '<a href="javascript:window.close()" class="back-link" onclick="if(confirm(\'关闭当前页面？\'))window.close()">✖ 关闭页面</a>',
+            '</div>',
+            '</div>',
+            '<script>',
+            'function fakeDownload(filename) {',
+            '   var content = "摸鱼商超资源下载: " + filename + "\\n生成时间: " + new Date().toLocaleString() + "\\n本文件为模拟资源，实际使用请替换为真实文件链接。";',
+            '   var blob = new Blob([content], { type: "text/plain" });',
+            '   var url = URL.createObjectURL(blob);',
+            '   var a = document.createElement("a");',
+            '   a.href = url;',
+            '   a.download = filename.replace(/[^\\w\\u4e00-\\u9fa5.]/g, "_") + ".txt";',
+            '   document.body.appendChild(a);',
+            '   a.click();',
+            '   document.body.removeChild(a);',
+            '   URL.revokeObjectURL(url);',
+            '   alert("✅ 演示下载已开始！\\n（此文件为模拟演示，非真实工具）");',
+            '}',
+            '<\/script>',
+            '</body>',
+            '</html>'
+        ].join('');
+        
+        // 创建新窗口并写入下载页面
+        const newWin = window.open();
+        if (newWin) {
+            newWin.document.write(downloadHtml);
+            newWin.document.close();
+        } else {
+            // 如果浏览器拦截弹窗，则创建临时a标签下载HTML文件
+            const blob = new Blob([downloadHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'download_center.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('⚠️ 浏览器已拦截弹窗，已自动下载HTML文件，请打开后查看');
+        }
+    }
+
+    // 处理彩蛋点击 - 完全静默，无任何视觉反馈
+    function handleEasterClick() {
+        if (easterTimer) {
+            clearTimeout(easterTimer);
+            easterTimer = null;
+        }
+        easterClickCount++;
+        
+        if (easterClickCount >= 3) {
+            openSecretDownloadPage();
+            easterClickCount = 0;
+            if (easterTimer) clearTimeout(easterTimer);
+            return;
+        }
+        
+        easterTimer = setTimeout(() => {
+            easterClickCount = 0;
+            easterTimer = null;
+        }, 1000);
+    }
+
+    // 渲染商品列表
+    function renderProducts() {
+        const grid = document.getElementById('productGrid');
+        
+        if (allProducts.length === 0) {
+            grid.innerHTML = '<div class="empty-msg">暂无商品</div>';
+            return;
+        }
+        
+        grid.innerHTML = allProducts.map(p => {
+            const isUserProduct = p.id > 10000 || (p.createTime !== undefined);
+            const isFixed = !isUserProduct;
+            
+            const imgSrc = p.imageData || p.img || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100%25\' height=\'100%25\' viewBox=\'0 0 24 24\' fill=\'%23ccc\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23eee\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E📦%3C/text%3E%3C/svg%3E';
+            
+            return `
+                <div class="product-card" data-product-id="${p.id}">
+                    ${isFixed ? '<div class="fixed-badge">📌 官方商品</div>' : '<div class="user-badge">👤 用户上传</div>'}
+                    ${isUserProduct ? `<button class="delete-btn" onclick="deleteUserProduct(${p.id})" title="删除违规商品">🗑️</button>` : ''}
+                    <div class="product-img">
+                        <img src="${imgSrc}" alt="${p.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100%25\' height=\'100%25\' viewBox=\'0 0 24 24\' fill=\'%23ccc\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23eee\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E📦%3C/text%3E%3C/svg%3E'">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${escapeHtml(p.name)}</div>
+                        <div class="product-price">¥${(p.price || 0).toLocaleString()}</div>
+                        <div class="product-category">📂 ${p.category || '其他'}</div>
+                        <div style="font-size:12px; color:#999; margin-top:4px;">原价 ¥${(p.oldPrice || p.price || 0).toLocaleString()}</div>
+                        ${isUserProduct && p.createTime ? `<div style="font-size:11px; color:#aaa; margin-top:6px;">📅 上传时间：${p.createTime}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        attachEasterListener();
+    }
+    
+    function attachEasterListener() {
+        const grid = document.getElementById('productGrid');
+        if (!grid) return;
+        grid.removeEventListener('click', easterClickListener);
+        grid.addEventListener('click', easterClickListener);
+    }
+    
+    function easterClickListener(e) {
+        let targetCard = e.target.closest('.product-card');
+        if (!targetCard) return;
+        if (e.target.classList && e.target.classList.contains('delete-btn')) return;
+        
+        const productId = parseInt(targetCard.dataset.productId);
+        if (productId === 21) {
+            const nameDiv = targetCard.querySelector('.product-name');
+            if (nameDiv && nameDiv.innerText.includes('DJI AIR 3S')) {
+                handleEasterClick();
+            }
+        }
+    }
+    
+    function showToast(msg) {
+        let toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerText = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2500);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+</script>
+</body>
+</html>
