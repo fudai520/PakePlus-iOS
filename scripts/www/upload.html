@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>商品上传 - 摸鱼商超</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 32px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff6f00;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 16px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff6f00;
+            box-shadow: 0 0 0 3px rgba(255, 111, 0, 0.1);
+        }
+
+        .btn-upload {
+            width: 100%;
+            background: #ff6f00;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-upload:hover {
+            background: #e06000;
+            transform: translateY(-2px);
+        }
+
+        .btn-back {
+            width: 100%;
+            background: #f0f0f0;
+            color: #666;
+            border: none;
+            padding: 12px;
+            border-radius: 40px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        .btn-back:hover {
+            background: #e0e0e0;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: gold;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            z-index: 9999;
+            animation: fadeUp 1s forwards;
+        }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                bottom: 0;
+            }
+
+            20% {
+                opacity: 1;
+                bottom: 50px;
+            }
+
+            100% {
+                opacity: 0;
+                bottom: 120px;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .info-note {
+            background: #fff3e0;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #8b6b3d;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .compress-note {
+            background: #e8f5e9;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #2e7d32;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height: 1.5;
+            border-left: 4px solid #4caf50;
+        }
+
+        .compress-note a {
+            color: #1565c0;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .compress-note a:hover {
+            text-decoration: underline;
+        }
+
+        .warning-text {
+            color: #d32f2f;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <div class="logo">🐟 摸鱼商超</div>
+            <div class="subtitle">上传你的商品，所有人可见</div>
+        </div>
+
+        <!-- 原有的图床提示 -->
+        <div class="info-note">
+            💡 小提示：您可以使用免费图床（如 <a href="https://img.remit.ee/" target="_blank">ImgToLink+</a>）上传图片，然后将图片直链粘贴到这里。这样就能给商品配上图片啦！<strong>请使用 jpg 格式的图片，否则图片无法显示！</strong>
+        </div>
+
+        <!-- 新增的图片压缩提示 -->
+        <div class="compress-note">
+            🖼️ <strong>图片压缩提示</strong>：为避免图片显示不完整或加载缓慢，请先将图片压缩后再上传！<br>
+            推荐使用 <a href="https://tinypng.com/" target="_blank">TinyPNG 免费压缩工具</a>（点击跳转），压缩后图片更小、加载更快。
+        </div>
+
+        <!-- 图片链接输入框 -->
+        <div class="form-group">
+            <label>商品图片链接（直链）</label>
+            <input type="text" id="productImageUrl" placeholder="https://example.com/your-image.jpg">
+            <div class="warning-text">⚠️ 请使用压缩后的图片链接，避免图片加载失败或显示不全</div>
+        </div>
+
+        <div class="form-group">
+            <label>商品名称 *</label>
+            <input type="text" id="productName" placeholder="例如：AMD Ryzen 9 9950X">
+        </div>
+
+        <div class="form-group">
+            <label>价格 (元) *</label>
+            <input type="number" id="productPrice" placeholder="例如：4299">
+        </div>
+
+        <div class="form-group">
+            <label>原价 (元)</label>
+            <input type="number" id="productOldPrice" placeholder="例如：4999">
+        </div>
+
+        <div class="form-group">
+            <label>分类</label>
+            <select id="productCategory">
+                <option value="CPU处理器">CPU处理器</option>
+                <option value="显卡">显卡</option>
+                <option value="智能手机">智能手机</option>
+                <option value="平板电脑">平板电脑</option>
+                <option value="无人机">无人机</option>
+                <option value="运动相机">运动相机</option>
+                <option value="智能手表">智能手表</option>
+                <option value="游戏本">游戏本</option>
+                <option value="电动车">电动车</option>
+                <option value="跑车">跑车</option>
+                <option value="航空器">航空器</option>
+                <option value="珠宝首饰">珠宝首饰</option>
+                <option value="电脑内存">电脑内存</option>
+                <option value="其他">其他</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>商品描述</label>
+            <textarea id="productDesc" rows="3" placeholder="商品简介..."></textarea>
+        </div>
+
+        <button class="btn-upload" id="uploadBtn">📤 上传商品</button>
+        <button class="btn-back" onclick="goBack()">← 返回商城</button>
+    </div>
+</div>
+
+<script>
+    // ==================== JSONBin 配置 ====================
+    const BIN_ID = "6a2a0fe1f5f4af5e29dc08f0";
+    const API_KEY = "$2a$10$4Rm.I7GQFIXrrSTyOH1U5eRIIELYyQcIU23rWb.mE9mtH.x0yCyBi";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+    let isUploading = false;
+
+    // 获取所有商品（包括用户上传和固定商品）
+    async function getProducts() {
+        try {
+            const response = await fetch(API_URL, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            if (!response.ok) throw new Error('加载失败');
+            const data = await response.json();
+            // 根据实际返回数据结构读取
+            if (data.record && data.record.products) return data.record.products;
+            if (data.products) return data.products;
+            return [];
+        } catch (error) {
+            console.error('读取商品失败:', error);
+            return [];
+        }
+    }
+
+    // 保存商品列表到云端
+    async function saveProducts(products) {
+        const response = await fetch(API_URL, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': API_KEY
+            },
+            body: JSON.stringify({ products: products })
+        });
+        return response.ok;
+    }
+
+    // 上传商品主函数
+    async function uploadProduct() {
+        if (isUploading) return;
+
+        // 获取表单数据
+        const imageUrl = document.getElementById('productImageUrl').value.trim();
+        const name = document.getElementById('productName').value.trim();
+        const price = parseFloat(document.getElementById('productPrice').value);
+        const oldPrice = parseFloat(document.getElementById('productOldPrice').value);
+        const category = document.getElementById('productCategory').value;
+        const desc = document.getElementById('productDesc').value.trim();
+
+        // 验证必填项
+        if (!name) {
+            showToast('❌ 请填写商品名称');
+            return;
+        }
+        if (isNaN(price) || price <= 0) {
+            showToast('❌ 请填写正确的价格（大于0）');
+            return;
+        }
+
+        // 可选：验证图片链接格式（非强制，只是友好提醒）
+        if (imageUrl && !imageUrl.match(/\.(jpg|jpeg|png|webp|gif|svg)$/i) && !imageUrl.startsWith('data:image')) {
+            showToast('⚠️ 图片链接格式可能不正确，请确保是 jpg/png 等格式的直链');
+            // 不阻止上传，仅提醒
+        }
+
+        isUploading = true;
+        const btn = document.getElementById('uploadBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loading"></span> 上传中...';
+        btn.disabled = true;
+
+        try {
+            // 获取现有商品列表
+            let existingProducts = await getProducts();
+            if (!Array.isArray(existingProducts)) existingProducts = [];
+
+            // 生成新商品ID（时间戳 + 随机数，避免冲突）
+            const newId = Date.now() + Math.floor(Math.random() * 10000);
+
+            // 构建新商品对象
+            const newProduct = {
+                id: newId,
+                name: name,
+                price: price,
+                oldPrice: oldPrice > 0 ? oldPrice : price,
+                category: category,
+                desc: desc || '暂无描述',
+                imageData: imageUrl || null,   // 存储图片直链
+                img: imageUrl || null,          // 兼容字段
+                createTime: new Date().toLocaleString(),
+                sales: 0,
+                isUserUpload: true
+            };
+
+            // 添加到列表开头（最新优先显示）
+            existingProducts.unshift(newProduct);
+
+            // 保存到云端
+            const success = await saveProducts(existingProducts);
+
+            if (success) {
+                showToast('✅ 商品上传成功！所有人可见');
+                // 清空表单
+                document.getElementById('productImageUrl').value = '';
+                document.getElementById('productName').value = '';
+                document.getElementById('productPrice').value = '';
+                document.getElementById('productOldPrice').value = '';
+                document.getElementById('productDesc').value = '';
+                // 分类保持默认，不清空
+
+                // 延迟询问是否返回商城
+                setTimeout(() => {
+                    if (confirm('上传成功！是否返回商城查看您的商品？')) {
+                        window.location.href = 'moyu.html';
+                    }
+                }, 500);
+            } else {
+                showToast('❌ 保存失败，请检查网络后重试');
+            }
+        } catch (error) {
+            console.error('上传错误:', error);
+            showToast('❌ 上传失败：' + error.message);
+        } finally {
+            isUploading = false;
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    // 显示提示消息
+    function showToast(msg) {
+        let toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerText = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            if (toast && toast.parentNode) toast.remove();
+        }, 2500);
+    }
+
+    // 返回商城
+    function goBack() {
+        window.location.href = 'moyu.html';
+    }
+
+    // 绑定上传按钮事件
+    document.getElementById('uploadBtn').addEventListener('click', uploadProduct);
+
+    // 可选：回车快捷上传（不强制，避免干扰）
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && document.activeElement.tagName !== 'TEXTAREA') {
+            // 避免意外触发，不做自动上传
+        }
+    });
+</script>
+</body>
+</html>
