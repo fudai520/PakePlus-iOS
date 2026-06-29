@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>我的 · 摸鱼商超</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, system-ui, sans-serif;
+        }
+        body {
+            background: #f5f7fa;
+            padding-bottom: 40px;
+        }
+        .app {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+        /* 头部 */
+        .header {
+            background: linear-gradient(135deg, #ff7e1a 0%, #ff6f00 100%);
+            margin: 0 -16px 16px -16px;
+            padding: 24px 20px 20px 20px;
+            border-radius: 0 0 28px 28px;
+            color: white;
+            box-shadow: 0 6px 20px rgba(255, 111, 0, 0.25);
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .header .sub {
+            font-size: 13px;
+            opacity: 0.85;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .user-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 8px;
+        }
+        .avatar {
+            width: 64px;
+            height: 64px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255,255,255,0.4);
+            flex-shrink: 0;
+        }
+        .user-info {
+            flex: 1;
+        }
+        .user-info .name {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .user-info .uid {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+        .edit-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .edit-btn:active {
+            transform: scale(0.94);
+            background: rgba(255,255,255,0.35);
+        }
+
+        /* 资产卡片 (钱包风格) */
+        .wallet-card {
+            background: white;
+            border-radius: 24px;
+            padding: 18px 20px 20px 20px;
+            margin: -8px 0 16px 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid rgba(255, 111, 0, 0.08);
+        }
+        .wallet-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .wallet-label {
+            font-size: 14px;
+            color: #888;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .wallet-amount {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ff6f00;
+            letter-spacing: 0.5px;
+        }
+        .wallet-amount small {
+            font-size: 16px;
+            font-weight: 400;
+            color: #999;
+            margin-left: 4px;
+        }
+        .wallet-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+        .wallet-actions button {
+            flex: 1;
+            min-width: 80px;
+            background: #fff3e6;
+            border: none;
+            padding: 10px 0;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #ff6f00;
+            font-size: 14px;
+            transition: 0.15s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .wallet-actions button:active {
+            transform: scale(0.94);
+            background: #ffe4d0;
+        }
+        .wallet-actions .primary {
+            background: #ff6f00;
+            color: white;
+        }
+        .wallet-actions .primary:active {
+            background: #e06000;
+        }
+
+        /* 菜单列表 */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            background: white;
+            border-radius: 24px;
+            padding: 18px 12px;
+            margin: 16px 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 0;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .menu-item:active {
+            background: #f5f5f5;
+            transform: scale(0.94);
+        }
+        .menu-item .icon {
+            font-size: 28px;
+        }
+        .menu-item .label {
+            font-size: 12px;
+            color: #444;
+            font-weight: 500;
+        }
+
+        /* 订单/信息区块 */
+        .info-block {
+            background: white;
+            border-radius: 24px;
+            padding: 16px 18px;
+            margin: 12px 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+        .info-block .title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #222;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-row .key {
+            color: #888;
+        }
+        .info-row .value {
+            font-weight: 500;
+            color: #222;
+        }
+        .info-row .value.highlight {
+            color: #ff6f00;
+        }
+
+        .badge {
+            background: #ff6f00;
+            color: white;
+            border-radius: 40px;
+            padding: 2px 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .action-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .action-btn-group button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .action-btn-group button:active {
+            transform: scale(0.96);
+        }
+        .btn-back {
+            background: #e8ecf1;
+            color: #333;
+        }
+        .btn-back:active {
+            background: #d5dae0;
+        }
+        .btn-logout {
+            background: #fee8e0;
+            color: #d35400;
+        }
+        .btn-logout:active {
+            background: #fdd5c0;
+        }
+        .btn-reset {
+            background: #f0f0f0;
+            color: #666;
+            font-size: 14px;
+        }
+        .btn-reset:active {
+            background: #e0e0e0;
+        }
+
+        /* 弹窗 (复用摸鱼商超风格) */
+        .modal-mask {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(6px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .modal-mask.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-box {
+            background: white;
+            width: 92%;
+            max-width: 380px;
+            border-radius: 32px;
+            padding: 24px 20px;
+            text-align: center;
+            transform: scale(0.94);
+            transition: transform 0.2s ease;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .modal-mask.active .modal-box {
+            transform: scale(1);
+        }
+        .modal-box h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        .modal-box .input-group {
+            margin: 16px 0;
+            text-align: left;
+        }
+        .modal-box .input-group label {
+            font-size: 13px;
+            color: #666;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .modal-box .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 40px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.15s;
+        }
+        .modal-box .input-group input:focus {
+            border-color: #ff6f00;
+            box-shadow: 0 0 0 3px rgba(255,111,0,0.1);
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .modal-actions button {
+            padding: 10px 28px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            flex: 1;
+        }
+        .modal-actions .cancel {
+            background: #eee;
+            color: #555;
+        }
+        .modal-actions .confirm {
+            background: #ff6f00;
+            color: white;
+        }
+        .modal-actions button:active {
+            transform: scale(0.94);
+        }
+
+        /* toast */
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 4000;
+            font-weight: 500;
+            font-size: 14px;
+            pointer-events: none;
+            animation: fadeUp 1.6s forwards;
+            white-space: nowrap;
+        }
+        @keyframes fadeUp {
+            0% { opacity: 0; bottom: 0; }
+            20% { opacity: 1; bottom: 50px; }
+            100% { opacity: 0; bottom: 120px; }
+        }
+
+        .fly-coin {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            font-size: 32px;
+            animation: flyCoin 0.8s ease-out forwards;
+        }
+        @keyframes flyCoin {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-220px) rotate(40deg); opacity: 0; }
+        }
+
+        /* responsive */
+        @media (max-width: 400px) {
+            .menu-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+            .wallet-amount { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <!-- 头部 -->
+    <div class="header">
+        <div class="header-top">
+            <h1>🐟 摸鱼商超</h1>
+            <span class="sub">📱 我的</span>
+        </div>
+        <div class="user-row">
+            <div class="avatar" id="avatarDisplay">🐟</div>
+            <div class="user-info">
+                <div class="name" id="userNameDisplay">摸鱼达人</div>
+                <div class="uid" id="userIdDisplay">ID: MY2026</div>
+            </div>
+            <button class="edit-btn" id="editProfileBtn">✏️ 编辑</button>
+        </div>
+    </div>
+
+    <!-- 钱包卡片 (仅保留余额 + 抽奖) -->
+    <div class="wallet-card">
+        <div class="wallet-row">
+            <span class="wallet-label">🐟 摸鱼币余额</span>
+            <span class="wallet-amount" id="walletAmount">1,000 <small>币</small></span>
+        </div>
+        <div class="wallet-actions">
+            <button class="primary" id="walletLottoBtn">🎰 抽奖</button>
+        </div>
+    </div>
+
+    <!-- 功能菜单 (原摸鱼商超核心入口) -->
+    <div class="menu-grid">
+        <div class="menu-item" id="menuCart">
+            <span class="icon">🛒</span>
+            <span class="label">购物车</span>
+        </div>
+        <div class="menu-item" id="menuOrders">
+            <span class="icon">📦</span>
+            <span class="label">我的订单</span>
+        </div>
+        <div class="menu-item" id="menuFavorites">
+            <span class="icon">❤️</span>
+            <span class="label">收藏</span>
+        </div>
+        <div class="menu-item" id="menuRank">
+            <span class="icon">🏆</span>
+            <span class="label">富豪榜</span>
+        </div>
+        <div class="menu-item" id="menuChat">
+            <span class="icon">💬</span>
+            <span class="label">摸鱼聊天</span>
+        </div>
+        <div class="menu-item" id="menuStock">
+            <span class="icon">📈</span>
+            <span class="label">股票</span>
+        </div>
+        <div class="menu-item" id="menuUpload">
+            <span class="icon">📤</span>
+            <span class="label">上传商品</span>
+        </div>
+        <div class="menu-item" id="menuContact">
+            <span class="icon">📧</span>
+            <span class="label">联系我们</span>
+        </div>
+    </div>
+
+    <!-- 账号信息区块 -->
+    <div class="info-block">
+        <div class="title">📋 账号信息</div>
+        <div class="info-row"><span class="key">用户名</span><span class="value" id="infoName">摸鱼达人</span></div>
+        <div class="info-row"><span class="key">用户ID</span><span class="value" id="infoUid">MY2026</span></div>
+        <div class="info-row"><span class="key">会员等级</span><span class="value highlight">🐟 黄金摸鱼</span></div>
+        <div class="info-row"><span class="key">累计消费</span><span class="value" id="infoTotalSpent">0 币</span></div>
+        <div class="info-row"><span class="key">连续购买</span><span class="value" id="infoConsecutive">0 天</span></div>
+        <div class="info-row"><span class="key">成就</span><span class="value" id="infoAchievements">🏅 0</span></div>
+    </div>
+
+    <!-- 操作按钮组: 返回 + 退出登录 + 重置 -->
+    <div class="action-btn-group">
+        <button class="btn-back" id="backToMoyuBtn">⬅️ 返回摸鱼商超</button>
+        <button class="btn-logout" id="logoutBtn">🚪 退出登录</button>
+        <button class="btn-reset" id="resetDataBtn">🔄 重置所有数据 (仅本机)</button>
+    </div>
+</div>
+
+<!-- 编辑资料弹窗 -->
+<div class="modal-mask" id="editModal">
+    <div class="modal-box">
+        <h3>✏️ 编辑资料</h3>
+        <div class="input-group">
+            <label>昵称</label>
+            <input type="text" id="editNameInput" placeholder="输入新昵称" maxlength="12">
+        </div>
+        <div class="input-group">
+            <label>头像 (Emoji)</label>
+            <input type="text" id="editAvatarInput" placeholder="如 🐟 🐱 🦊" maxlength="2">
+        </div>
+        <div class="modal-actions">
+            <button class="cancel" id="editCancelBtn">取消</button>
+            <button class="confirm" id="editConfirmBtn">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- 抽奖弹窗 (保留) -->
+<div class="modal-mask" id="actionModal">
+    <div class="modal-box">
+        <h3 id="actionModalTitle">🎰 幸运抽奖</h3>
+        <div id="actionModalBody">
+            <p style="color: #666; margin: 12px 0;">每次抽奖消耗 <strong>100</strong> 摸鱼币，随机获得 50 ~ 5000 币</p>
+        </div>
+        <div class="modal-actions">
+            <button class="cancel" id="actionCancelBtn">取消</button>
+            <button class="confirm" id="actionConfirmBtn">🎲 抽奖</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ----- 数据层 (与摸鱼商超共享 localStorage) -----
+        const STORAGE_KEY = 'moyu_profile';
+        let profile = {
+            name: '摸鱼达人',
+            avatar: '🐟',
+            uid: 'MY2026',
+            totalSpent: 0,
+            consecutive: 0,
+            achievements: 0,
+        };
+
+        // 资产 (与摸鱼商超同步)
+        let assets = 1000;
+
+        // ----- 加载本地数据 -----
+        function loadProfile() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const saved = JSON.parse(raw);
+                    profile = { ...profile, ...saved };
+                }
+            } catch (e) {}
+            // 从摸鱼商超同步资产
+            const assetFromLS = localStorage.getItem('assets');
+            if (assetFromLS) {
+                assets = parseInt(assetFromLS, 10) || 1000;
+            }
+            // 同步总消费
+            const spent = localStorage.getItem('totalSpent');
+            if (spent) profile.totalSpent = parseInt(spent, 10) || 0;
+            const cons = localStorage.getItem('consecutive');
+            if (cons) profile.consecutive = parseInt(cons, 10) || 0;
+            // 成就计数 (从摸鱼商超 achievements 计算)
+            const ach = localStorage.getItem('achievements');
+            if (ach) {
+                try {
+                    const obj = JSON.parse(ach);
+                    profile.achievements = Object.values(obj).filter(v => v === true).length;
+                } catch (e) {}
+            }
+        }
+
+        function saveProfile() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+            // 同步资产回摸鱼商超 (保持一致性)
+            localStorage.setItem('assets', assets);
+        }
+
+        // ----- UI 渲染 -----
+        function renderUI() {
+            document.getElementById('userNameDisplay').textContent = profile.name;
+            document.getElementById('avatarDisplay').textContent = profile.avatar || '🐟';
+            document.getElementById('userIdDisplay').textContent = `ID: ${profile.uid}`;
+            document.getElementById('infoName').textContent = profile.name;
+            document.getElementById('infoUid').textContent = profile.uid;
+            document.getElementById('walletAmount').innerHTML = `${assets.toLocaleString()} <small>币</small>`;
+            document.getElementById('infoTotalSpent').textContent = `${profile.totalSpent.toLocaleString()} 币`;
+            document.getElementById('infoConsecutive').textContent = `${profile.consecutive} 天`;
+            document.getElementById('infoAchievements').textContent = `🏅 ${profile.achievements}`;
+        }
+
+        // ----- 工具函数 (复用摸鱼商超风格) -----
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'toast-msg';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 1800);
+        }
+
+        function flyEffect(count) {
+            for (let i = 0; i < count; i++) {
+                const coin = document.createElement('div');
+                coin.className = 'fly-coin';
+                coin.textContent = '🐟';
+                coin.style.left = (Math.random() * window.innerWidth * 0.8 + 60) + 'px';
+                coin.style.top = (Math.random() * 40 + 30) + '%';
+                document.body.appendChild(coin);
+                setTimeout(() => coin.remove(), 800);
+            }
+        }
+
+        function updateAssets(newVal, msg) {
+            assets = newVal;
+            localStorage.setItem('assets', assets);
+            renderUI();
+            if (msg) showToast(msg);
+            saveProfile();
+        }
+
+        // 弹窗控制
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // ----- 编辑资料 -----
+        document.getElementById('editProfileBtn').addEventListener('click', () => {
+            document.getElementById('editNameInput').value = profile.name;
+            document.getElementById('editAvatarInput').value = profile.avatar || '🐟';
+            openModal('editModal');
+        });
+        document.getElementById('editCancelBtn').addEventListener('click', () => closeModal('editModal'));
+        document.getElementById('editConfirmBtn').addEventListener('click', () => {
+            const name = document.getElementById('editNameInput').value.trim() || '摸鱼达人';
+            const avatar = document.getElementById('editAvatarInput').value.trim() || '🐟';
+            profile.name = name.slice(0, 12);
+            profile.avatar = avatar.slice(0, 2);
+            saveProfile();
+            renderUI();
+            closeModal('editModal');
+            showToast('✅ 资料已更新');
+        });
+
+        // ----- 抽奖 (保留) -----
+        document.getElementById('walletLottoBtn').addEventListener('click', () => {
+            openModal('actionModal');
+        });
+
+        document.getElementById('actionCancelBtn').addEventListener('click', () => closeModal('actionModal'));
+        document.getElementById('actionConfirmBtn').addEventListener('click', () => {
+            const cost = 100;
+            if (assets < cost) { showToast('❌ 余额不足，需要100摸鱼币'); return; }
+            const prize = Math.floor(Math.random() * 5000) + 50;
+            const win = prize > 200;
+            const newAssets = assets - cost + prize;
+            updateAssets(newAssets, win ? `🎉 抽中 ${prize} 摸鱼币！` : `🍀 获得 ${prize} 摸鱼币`);
+            if (win) flyEffect(12);
+            closeModal('actionModal');
+        });
+
+        // 点击背景关闭弹窗
+        document.querySelectorAll('.modal-mask').forEach(m => {
+            m.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+        });
+
+        // ----- 菜单跳转 (摸鱼商超页面) -----
+        function goToPage(url) {
+            window.location.href = url;
+        }
+
+        document.getElementById('menuCart').addEventListener('click', () => goToPage('moyu.html'));
+        document.getElementById('menuOrders').addEventListener('click', () => goToPage('moyu.html'));
+        document.getElementById('menuFavorites').addEventListener('click', () => goToPage('moyu.html'));
+        document.getElementById('menuRank').addEventListener('click', () => goToPage('moyu.html'));
+        document.getElementById('menuChat').addEventListener('click', () => goToPage('chat.html'));
+        document.getElementById('menuStock').addEventListener('click', () => goToPage('stock.html'));
+        document.getElementById('menuUpload').addEventListener('click', () => goToPage('upload.html'));
+        document.getElementById('menuContact').addEventListener('click', () => {
+            const email = 'aqqe198651@qq.com';
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(email).then(() => showToast('📧 邮箱已复制: ' + email)).catch(() => {
+                    const ta = document.createElement('textarea');
+                    ta.value = email;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    showToast('📧 邮箱已复制');
+                });
+            } else {
+                const ta = document.createElement('textarea');
+                ta.value = email;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('📧 邮箱已复制');
+            }
+        });
+
+        // ----- 返回摸鱼商超 -----
+        document.getElementById('backToMoyuBtn').addEventListener('click', () => {
+            window.location.href = 'moyu.html';
+        });
+
+        // ----- 退出登录 (跳转 index.html) -----
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            if (confirm('确认退出登录吗？')) {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // ----- 重置数据 (仅本机) -----
+        document.getElementById('resetDataBtn').addEventListener('click', () => {
+            if (confirm('⚠️ 确定要重置所有数据吗？(仅本机)')) {
+                localStorage.removeItem('assets');
+                localStorage.removeItem('cart');
+                localStorage.removeItem('orders');
+                localStorage.removeItem('favorites');
+                localStorage.removeItem('totalSpent');
+                localStorage.removeItem('consecutive');
+                localStorage.removeItem('achievements');
+                localStorage.removeItem('selectedQuantities');
+                localStorage.removeItem('richRankList');
+                localStorage.removeItem('currentPlayer');
+                localStorage.removeItem(STORAGE_KEY);
+                assets = 1000;
+                profile = { name: '摸鱼达人', avatar: '🐟', uid: 'MY2026', totalSpent: 0, consecutive: 0, achievements: 0 };
+                saveProfile();
+                renderUI();
+                showToast('🔄 已重置所有数据');
+            }
+        });
+
+        // 监听 storage 变化 (其他标签页修改资产时同步)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'assets') {
+                assets = parseInt(e.newValue, 10) || 1000;
+                renderUI();
+            }
+            if (e.key === 'totalSpent' || e.key === 'consecutive' || e.key === 'achievements') {
+                loadProfile();
+                renderUI();
+            }
+        });
+
+        // ----- 初始化 -----
+        loadProfile();
+        renderUI();
+
+        // 额外：如果摸鱼商超有同步资产，每3秒检查一次 (保证多标签同步)
+        setInterval(() => {
+            const assetFromLS = localStorage.getItem('assets');
+            if (assetFromLS) {
+                const newAssets = parseInt(assetFromLS, 10);
+                if (newAssets !== assets) {
+                    assets = newAssets;
+                    renderUI();
+                }
+            }
+        }, 3000);
+    })();
+</script>
+</body>
+</html>
