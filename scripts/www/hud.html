@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>图片下载 · 蝴蝶.v1.2.8豪华版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .download-container {
+            max-width: 420px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 32px 24px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 72px;
+            margin-bottom: 12px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 24px;
+        }
+
+        .file-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+            border: 0.5px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .file-info .label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.35);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+
+        .file-info .filename {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            word-break: break-all;
+        }
+
+        .file-info .meta {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .file-preview {
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            border: 0.5px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-preview .preview-text {
+            position: absolute;
+            bottom: 16px;
+            right: 20px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.15);
+            letter-spacing: 1px;
+        }
+
+        .file-preview .butterfly {
+            font-size: 80px;
+            animation: float 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(255, 200, 100, 0.15));
+        }
+
+        .file-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4facfe 100%);
+            border: none;
+            border-radius: 40px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(245, 87, 108, 0.3);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .download-btn:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 10px rgba(245, 87, 108, 0.2);
+        }
+
+        .download-btn .arrow {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .download-btn:active .arrow {
+            transform: translateY(3px);
+        }
+
+        .upload-hint {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: rgba(255, 200, 100, 0.08);
+            border: 0.5px solid rgba(255, 200, 100, 0.15);
+            border-radius: 12px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            line-height: 1.6;
+        }
+
+        .upload-hint strong {
+            color: rgba(255, 200, 100, 0.6);
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid rgba(255,255,255,0.06);
+            pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            .download-container { padding: 24px 16px 32px; }
+            .title { font-size: 18px; }
+            .file-info .filename { font-size: 15px; }
+            .file-preview .butterfly { font-size: 56px; }
+            .download-btn { font-size: 16px; padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="download-container">
+    <span class="icon">🦋</span>
+    <div class="title">蝴蝶 · 豪华版</div>
+    <div class="subtitle">v1.2.8 · 高清壁纸</div>
+
+    <div class="file-info">
+        <div class="label">📁 文件名</div>
+        <div class="filename">蝴蝶.v1.2.8豪华版.jpg</div>
+        <div class="meta">
+            <span>📐 1920 × 1080</span>
+            <span>💾 2.4 MB</span>
+            <span>🖼️ JPG</span>
+        </div>
+    </div>
+
+    <div class="file-preview" id="previewArea">
+        <span class="butterfly">🦋</span>
+        <span class="preview-text">蝴蝶.v1.2.8豪华版</span>
+    </div>
+
+    <button class="download-btn" id="downloadBtn">
+        ⬇️ 下载图片 <span class="arrow">↓</span>
+    </button>
+
+    <div class="upload-hint">
+        💡 请将您的图片文件命名为 <strong>蝴蝶.v1.2.8豪华版.jpg</strong><br>
+        并放在与本页面相同的目录下
+    </div>
+
+    <div class="footer">点击即可下载 · 无需注册</div>
+</div>
+
+<div class="toast" id="toast">✅ 开始下载...</div>
+
+<script>
+    (function() {
+        const downloadBtn = document.getElementById('downloadBtn');
+        const toast = document.getElementById('toast');
+        const previewArea = document.getElementById('previewArea');
+        let toastTimer = null;
+
+        // 要下载的图片文件名
+        const FILE_NAME = '蝴蝶.v1.2.8豪华版.jpg';
+
+        function showToastMsg(msg) {
+            if (toastTimer) {
+                clearTimeout(toastTimer);
+                toast.classList.remove('show');
+            }
+            void toast.offsetWidth;
+            toast.textContent = msg;
+            toast.classList.add('show');
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+                toastTimer = null;
+            }, 2000);
+        }
+
+        // 尝试加载图片预览
+        function loadPreview() {
+            const img = new Image();
+            img.onload = function() {
+                previewArea.innerHTML = '';
+                previewArea.appendChild(img);
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+            };
+            img.onerror = function() {
+                // 图片不存在，保持默认预览
+                previewArea.innerHTML = `
+                    <span class="butterfly">🦋</span>
+                    <span class="preview-text">蝴蝶.v1.2.8豪华版</span>
+                `;
+            };
+            img.src = FILE_NAME;
+        }
+
+        function downloadImage() {
+            try {
+                // 创建下载链接，直接指向图片文件
+                const link = document.createElement('a');
+                link.href = FILE_NAME;
+                link.download = FILE_NAME;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToastMsg('✅ 开始下载！');
+            } catch (error) {
+                console.error('下载失败:', error);
+                showToastMsg('❌ 下载失败，请确保图片文件存在');
+            }
+        }
+
+        downloadBtn.addEventListener('click', downloadImage);
+
+        // 键盘快捷键
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const active = document.activeElement;
+                if (active === downloadBtn || active === document.body) {
+                    e.preventDefault();
+                    downloadImage();
+                }
+            }
+        });
+
+        // 加载预览
+        loadPreview();
+
+        console.log('🦋 蝴蝶.v1.2.8豪华版 下载页面已加载');
+        console.log('📁 请将图片文件放在同目录下，文件名: ' + FILE_NAME);
+        console.log('💡 点击按钮或按 Enter/Space 下载');
+    })();
+</script>
+
+</body>
+</html>
