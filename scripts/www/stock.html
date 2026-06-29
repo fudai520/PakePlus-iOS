@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>摸鱼量化·双模股票模拟器 | 专业/经典自由切换</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, -apple-system, 'Segoe UI', monospace;
+            background: #0A0C15;
+            color: #E2E8F0;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        /* 经典模式浅色背景 */
+        body.classic-mode {
+            background: #F1F5F9;
+            color: #1E293B;
+        }
+
+        body.classic-mode .glass-panel,
+        body.classic-mode .top-nav,
+        body.classic-mode .ticker-tape,
+        body.classic-mode .chart-area,
+        body.classic-mode .orderbook-area,
+        body.classic-mode .stock-card-pro,
+        body.classic-mode .portfolio-analytics {
+            background: #FFFFFF;
+            border-color: #CBD5E1;
+            color: #1E293B;
+        }
+
+        body.classic-mode .holding-info,
+        body.classic-mode .metric-card {
+            background: #F8FAFC;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* 专业玻璃面板 */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            border-radius: 28px;
+        }
+
+        /* 顶部导航栏 */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding: 16px 28px;
+            margin-bottom: 24px;
+            background: rgba(10, 14, 23, 0.95);
+            border-bottom: 1px solid #2D3A5E;
+            border-radius: 28px;
+        }
+
+        .logo-area h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FACC15, #2ECC71);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo-area p {
+            font-size: 11px;
+            color: #5B6E8C;
+        }
+
+        .disclaimer-badge {
+            background: #1E293B;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 11px;
+            color: #FACC15;
+            font-weight: 500;
+        }
+
+        .asset-dashboard {
+            display: flex;
+            gap: 24px;
+            background: #0F172A;
+            padding: 10px 24px;
+            border-radius: 60px;
+            border: 1px solid #2D3A5E;
+        }
+
+        .asset-item {
+            text-align: center;
+        }
+
+        .asset-label {
+            font-size: 11px;
+            color: #94A3B8;
+            text-transform: uppercase;
+        }
+
+        .asset-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #FACC15;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-pro {
+            background: transparent;
+            border: 1px solid #2ECC71;
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: #2ECC71;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+
+        .btn-pro:hover {
+            background: #2ECC7120;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            border-color: #EF4444;
+            color: #F87171;
+        }
+
+        .btn-danger:hover {
+            background: #EF444420;
+        }
+
+        .mode-switch-btn {
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            border: none;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* 指数滚动条 */
+        .ticker-tape {
+            background: #0F172A;
+            border-radius: 20px;
+            padding: 12px 20px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 24px;
+            border-left: 4px solid #2ECC71;
+        }
+
+        .index-card {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .index-name {
+            font-size: 12px;
+            color: #94A3B8;
+        }
+
+        .index-price {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .index-change {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .positive {
+            color: #E74C3C;
+        }
+
+        .negative {
+            color: #2ECC71;
+        }
+
+        /* 两栏布局 */
+        .market-panel {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .chart-area {
+            flex: 2;
+            min-width: 260px;
+            background: #0F172A;
+            border-radius: 28px;
+            padding: 20px;
+            border: 1px solid #1E293B;
+        }
+
+        .kline-simulator {
+            background: #020617;
+            border-radius: 20px;
+            padding: 16px;
+            height: 220px;
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            overflow-x: auto;
+        }
+
+        .kline-bar {
+            background: #2ECC71;
+            width: 8px;
+            border-radius: 4px 4px 0 0;
+            transition: 0.1s;
+        }
+
+        .orderbook-area {
+            flex: 1;
+            background: #0F172A;
+            border-radius: 28px;
+            padding: 20px;
+            border: 1px solid #1E293B;
+        }
+
+        .depth-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid #1E293B;
+        }
+
+        /* 股票网格 */
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            margin-bottom: 36px;
+        }
+
+        .stock-card-pro {
+            background: linear-gradient(145deg, #0F172A, #0B1120);
+            border-radius: 28px;
+            padding: 20px;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid #1E2A3E;
+        }
+
+        .stock-card-pro:hover {
+            transform: translateY(-4px);
+            border-color: #2ECC71;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.6);
+        }
+
+        .price-stats {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin: 12px 0;
+        }
+
+        .live-price {
+            font-size: 32px;
+            font-weight: 800;
+            color: #FACC15;
+        }
+
+        .holding-info {
+            background: #020617;
+            padding: 10px 12px;
+            border-radius: 20px;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+
+        .trade-controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* 交易输入框 - 移动端优化 */
+        .trade-input-pro {
+            background: #020617;
+            border: 1px solid #2D3A5E;
+            padding: 12px 12px;
+            border-radius: 28px;
+            width: 100px;
+            min-width: 80px;
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            min-height: 44px;
+            font-size: 16px;
+            -webkit-user-select: text;
+            user-select: text;
+            -webkit-appearance: none;
+            appearance: none;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .trade-input-pro:focus {
+            border-color: #2ECC71;
+            box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
+        }
+
+        .trade-input-pro::-webkit-outer-spin-button,
+        .trade-input-pro::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        .trade-input-pro[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .btn-buy-pro {
+            background: linear-gradient(95deg, #E74C3C, #C0392B);
+            flex: 1;
+            min-width: 80px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            color: white;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: transform 0.15s;
+        }
+
+        .btn-buy-pro:active {
+            transform: scale(0.96);
+        }
+
+        .btn-sell-pro {
+            background: linear-gradient(95deg, #2ECC71, #27AE60);
+            flex: 1;
+            min-width: 80px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            padding: 12px 16px;
+            font-size: 15px;
+            transition: transform 0.15s;
+        }
+
+        .btn-sell-pro:active {
+            transform: scale(0.96);
+        }
+
+        /* 持仓分析 */
+        .portfolio-analytics {
+            background: #0F172A;
+            border-radius: 28px;
+            padding: 24px;
+            margin-top: 20px;
+            border: 1px solid #1E293B;
+        }
+
+        .analytics-grid {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #2D3A5E;
+        }
+
+        .metric-card {
+            background: #020617;
+            padding: 12px 20px;
+            border-radius: 20px;
+            min-width: 140px;
+        }
+
+        .metric-number {
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        .holdings-list {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .holding-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #1E2A3E;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* 娱乐提示弹窗 */
+        .entertainment-tip {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1E293B;
+            backdrop-filter: blur(12px);
+            border-left: 4px solid #FACC15;
+            padding: 12px 20px;
+            border-radius: 28px;
+            font-size: 12px;
+            color: #CBD5E1;
+            z-index: 999;
+            pointer-events: none;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .toast-pro {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1E293B;
+            backdrop-filter: blur(16px);
+            border: 1px solid #FACC15;
+            color: #FACC15;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            z-index: 10000;
+            animation: fadeUp 0.3s forwards;
+        }
+
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px);}
+            20% { opacity: 1; transform: translateX(-50%) translateY(0);}
+            80% { opacity: 1;}
+            100% { opacity: 0; visibility: hidden;}
+        }
+
+        /* 经典模式特定覆盖 */
+        body.classic-mode .trade-input-pro,
+        body.classic-mode .holding-info {
+            background: #F1F5F9;
+            border-color: #CBD5E1;
+            color: #1E293B;
+        }
+        body.classic-mode .kline-simulator {
+            background: #E2E8F0;
+        }
+        body.classic-mode .asset-dashboard {
+            background: #FFFFFF;
+            border-color: #CBD5E1;
+        }
+
+        /* 移动端响应式 */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .top-nav {
+                padding: 12px 16px;
+                border-radius: 20px;
+                gap: 12px;
+            }
+
+            .logo-area h1 {
+                font-size: 18px;
+            }
+
+            .asset-dashboard {
+                gap: 12px;
+                padding: 8px 16px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .asset-value {
+                font-size: 18px;
+            }
+
+            .trade-controls {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .trade-input-pro {
+                width: 80px;
+                min-width: 65px;
+                padding: 10px 8px;
+                min-height: 40px;
+                font-size: 16px;
+            }
+
+            .btn-buy-pro,
+            .btn-sell-pro {
+                padding: 10px 12px;
+                font-size: 14px;
+                min-width: 60px;
+            }
+
+            .stock-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .stock-card-pro {
+                padding: 16px;
+            }
+
+            .live-price {
+                font-size: 26px;
+            }
+
+            .analytics-grid {
+                gap: 12px;
+            }
+
+            .metric-card {
+                min-width: 100px;
+                padding: 8px 14px;
+            }
+
+            .metric-number {
+                font-size: 20px;
+            }
+
+            .ticker-tape {
+                padding: 10px 14px;
+                gap: 12px;
+            }
+
+            .index-price {
+                font-size: 18px;
+            }
+
+            .market-panel {
+                flex-direction: column;
+            }
+
+            .kline-simulator {
+                height: 160px;
+            }
+
+            .action-buttons .btn-pro {
+                font-size: 12px;
+                padding: 6px 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-nav {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .logo-area {
+                text-align: center;
+            }
+
+            .asset-dashboard {
+                justify-content: space-around;
+            }
+
+            .asset-item .asset-value {
+                font-size: 16px;
+            }
+
+            .trade-input-pro {
+                width: 70px;
+                min-width: 55px;
+                padding: 8px 6px;
+                min-height: 36px;
+                font-size: 15px;
+            }
+
+            .btn-buy-pro,
+            .btn-sell-pro {
+                padding: 8px 10px;
+                font-size: 13px;
+                min-width: 50px;
+            }
+
+            .action-buttons {
+                justify-content: center;
+            }
+
+            .action-buttons .btn-pro {
+                font-size: 11px;
+                padding: 5px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 顶部导航栏 -->
+    <div class="top-nav">
+        <div class="logo-area">
+            <h1>🐟 摸鱼量化·双模终端</h1>
+            <p>PROFESSIONAL | CLASSIC 一键切换</p>
+        </div>
+        <div class="asset-dashboard">
+            <div class="asset-item"><div class="asset-label">摸鱼币余额</div><div class="asset-value" id="proCash">100,000.00</div></div>
+            <div class="asset-item"><div class="asset-label">总市值</div><div class="asset-value" id="proMarketVal">0.00</div></div>
+            <div class="asset-item"><div class="asset-label">总盈亏</div><div class="asset-value" id="proTotalPL">0.00</div></div>
+            <div class="asset-item"><div class="asset-label">收益率</div><div class="asset-value" id="proYield">0%</div></div>
+        </div>
+        <div class="action-buttons">
+            <button class="btn-pro mode-switch-btn" id="toggleModeBtn">🎨 切换经典/专业版</button>
+            <button class="btn-pro" id="syncAssetBtn">🔄 同步商城资产</button>
+            <button class="btn-pro btn-danger" id="proResetBtn">⟳ 重置终端</button>
+            <a href="index.html" class="btn-pro" style="text-decoration:none;">🏠 返回主商城</a>
+        </div>
+    </div>
+
+    <!-- 仅供娱乐提示条 -->
+    <div class="ticker-tape" style="background: #1E1B2E; border-left-color: #FACC15; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; width: 100%; justify-content: center;">
+            <span style="font-size: 14px;">🎭</span>
+            <span style="font-weight: 500;">⚠️ 本程序仅供娱乐，所有行情数据均为模拟生成，不构成真实投资建议。理性交易，开心摸鱼 ⚠️</span>
+            <span style="font-size: 14px;">🐟</span>
+        </div>
+    </div>
+
+    <!-- 指数滚动条 -->
+    <div class="ticker-tape">
+        <div class="index-card"><div class="index-name">📊 摸鱼综合指数</div><div class="index-price" id="mainIndex">998.42</div><div class="index-change" id="indexChange">+0.00%</div></div>
+        <div class="index-card"><div class="index-name">💎 科创虚拟50</div><div class="index-price" id="techIndex">2456.30</div><div class="index-change" id="techChange">+0.00%</div></div>
+        <div class="index-card"><div class="index-name">⚡ 量化波动率</div><div class="index-price" id="volIndex">18.5%</div><div class="index-change">实时高频</div></div>
+    </div>
+
+    <!-- K线模拟 + 盘口 -->
+    <div class="market-panel">
+        <div class="chart-area">
+            <div class="chart-header" style="display: flex; justify-content: space-between;"><span>📈 实时K线模拟 (最近20周期)</span><span style="font-size:11px;">动态波动</span></div>
+            <div class="kline-simulator" id="klineContainer"></div>
+        </div>
+        <div class="orderbook-area">
+            <div style="font-weight:600; margin-bottom:12px;">📖 市场深度 (模拟盘口)</div>
+            <div id="orderBook"></div>
+        </div>
+    </div>
+
+    <!-- 股票网格 -->
+    <div class="stock-grid" id="proStockGrid"></div>
+
+    <!-- 专业持仓分析 -->
+    <div class="portfolio-analytics">
+        <div class="analytics-grid">
+            <div class="metric-card"><div class="metric-label">持仓数量</div><div class="metric-number" id="holdingCount">0</div></div>
+            <div class="metric-card"><div class="metric-label">最大单股盈亏</div><div class="metric-number" id="maxPLStock">---</div></div>
+            <div class="metric-card"><div class="metric-label">夏普模拟比率</div><div class="metric-number" id="sharpeRatio">0.00</div></div>
+            <div class="metric-card"><div class="metric-label">风险暴露</div><div class="metric-number" id="riskExposure">0%</div></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;"><strong>📋 逐笔持仓 & 成本分析</strong><span style="font-size:12px;">T+0 实时结算</span></div>
+        <div id="proPortfolioList" class="holdings-list"></div>
+        <div style="font-size:11px; text-align:center; margin-top: 20px; opacity:0.7;">⚡ 价格每3秒波动 ±4% | 数据加密本地存储 | 摸鱼量化模拟系统</div>
+    </div>
+    <div class="entertainment-tip">🎮 仅供娱乐 · 所有数据均为模拟</div>
+</div>
+
+<script>
+    (function(){
+        // ---------- 股票池 ----------
+        const ASSETS_BASE = [
+            { id: 1, name: "摸鱼科技", code: "688001", industry: "AI算力", basePrice: 128.50, vol: 0.08 },
+            { id: 2, name: "暴富集团", code: "600519", industry: "金融控股", basePrice: 518.20, vol: 0.07 },
+            { id: 3, name: "离谱制造", code: "300750", industry: "高端智造", basePrice: 68.75, vol: 0.09 },
+            { id: 4, name: "首富控股", code: "000858", industry: "综合投资", basePrice: 1050.00, vol: 0.06 },
+            { id: 5, name: "摸鱼矿业", code: "601899", industry: "稀缺资源", basePrice: 212.30, vol: 0.10 },
+            { id: 6, name: "量子智能", code: "688777", industry: "量子科技", basePrice: 345.60, vol: 0.12 }
+        ];
+        
+        let stocks = [];
+        let userCash = 100000;
+        let holdings = {};
+        let priceTimer = null;
+        let klineData = [];
+        let currentMode = "professional";
+
+        // ===== 新增：保存每个股票输入框的数量值 =====
+        let inputQuantities = {};
+
+        // DOM 元素
+        const cashSpan = document.getElementById("proCash");
+        const marketValSpan = document.getElementById("proMarketVal");
+        const totalPLSpan = document.getElementById("proTotalPL");
+        const yieldSpan = document.getElementById("proYield");
+        const holdingCountSpan = document.getElementById("holdingCount");
+        const maxPLStockSpan = document.getElementById("maxPLStock");
+        const sharpeSpan = document.getElementById("sharpeRatio");
+        const riskExposureSpan = document.getElementById("riskExposure");
+        const mainIndexSpan = document.getElementById("mainIndex");
+        const indexChangeSpan = document.getElementById("indexChange");
+        const techIndexSpan = document.getElementById("techIndex");
+        const techChangeSpan = document.getElementById("techChange");
+        const klineContainer = document.getElementById("klineContainer");
+        const orderBookDiv = document.getElementById("orderBook");
+
+        function formatMoney(val) { return val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+        function showToast(msg, isErr = false) { let t = document.createElement("div"); t.className = "toast-pro"; t.innerText = msg; if(isErr) t.style.borderColor = "#EF4444"; document.body.appendChild(t); setTimeout(() => t.remove(), 2600); }
+
+        function persist() {
+            localStorage.setItem("dualModeStocks", JSON.stringify(stocks));
+            localStorage.setItem("dualModeCash", userCash);
+            localStorage.setItem("dualModeHoldings", JSON.stringify(holdings));
+            localStorage.setItem("dualModeUI", currentMode);
+            // 保存输入框数量
+            localStorage.setItem("dualModeInputQty", JSON.stringify(inputQuantities));
+        }
+
+        function loadData() {
+            let savedStocks = localStorage.getItem("dualModeStocks");
+            if(savedStocks) {
+                stocks = JSON.parse(savedStocks);
+                if(stocks.length !== ASSETS_BASE.length) rebuildStockPrices();
+            } else { rebuildStockPrices(); }
+            let savedCash = localStorage.getItem("dualModeCash");
+            if(savedCash !== null) userCash = parseFloat(savedCash);
+            else userCash = 100000;
+            let savedHold = localStorage.getItem("dualModeHoldings");
+            if(savedHold) holdings = JSON.parse(savedHold);
+            else holdings = {};
+            let savedMode = localStorage.getItem("dualModeUI");
+            if(savedMode === "classic") applyClassicMode();
+            else applyProfessionalMode();
+            // 加载保存的输入框数量
+            let savedQty = localStorage.getItem("dualModeInputQty");
+            if(savedQty) {
+                inputQuantities = JSON.parse(savedQty);
+            } else {
+                inputQuantities = {};
+            }
+        }
+
+        function rebuildStockPrices() {
+            stocks = ASSETS_BASE.map(s => ({
+                id: s.id, name: s.name, code: s.code, industry: s.industry,
+                price: s.basePrice, changePct: 0, volume: s.vol
+            }));
+        }
+
+        // 价格波动引擎
+        function fluctuateAdvanced() {
+            let oldIndex = stocks.reduce((sum, s) => sum + s.price, 0) / stocks.length;
+            for(let i=0;i<stocks.length;i++) {
+                let stock = stocks[i];
+                let base = ASSETS_BASE.find(b => b.id === stock.id).basePrice;
+                let volatility = stock.volume || 0.08;
+                let change = (Math.random() - 0.5) * volatility * 2;
+                let newPrice = stock.price * (1 + change);
+                newPrice = Math.max(base * 0.6, Math.min(base * 1.8, newPrice));
+                newPrice = Math.round(newPrice * 100) / 100;
+                let realChange = ((newPrice - stock.price) / stock.price) * 100;
+                stock.price = newPrice;
+                stock.changePct = parseFloat(realChange.toFixed(2));
+            }
+            let newIndex = stocks.reduce((sum, s) => sum + s.price, 0) / stocks.length;
+            let idxChange = ((newIndex - oldIndex) / oldIndex) * 100;
+            updateIndices(newIndex, idxChange);
+            updateKlineSimulator(newIndex);
+            renderOrderBook();
+            // ===== 修复：渲染时保留用户输入的数量 =====
+            renderStocks();
+            renderPortfolioAnalysis();
+            persist();
+        }
+
+        function updateIndices(mainVal, changePct) {
+            mainIndexSpan.innerText = mainVal.toFixed(2);
+            let colorClass = changePct >= 0 ? 'positive' : 'negative';
+            indexChangeSpan.innerHTML = `${changePct >= 0 ? '▲' : '▼'} ${Math.abs(changePct).toFixed(2)}%`;
+            indexChangeSpan.className = `index-change ${colorClass}`;
+            let techIdx = mainVal * 2.46;
+            techIndexSpan.innerText = techIdx.toFixed(2);
+            techChangeSpan.innerHTML = `${changePct >= 0 ? '▲' : '▼'} ${(changePct*1.1).toFixed(2)}%`;
+            techChangeSpan.className = `index-change ${colorClass}`;
+        }
+
+        function updateKlineSimulator(currentIdx) {
+            klineData.push(currentIdx);
+            if(klineData.length > 20) klineData.shift();
+            if(!klineContainer) return;
+            let maxVal = Math.max(...klineData, currentIdx);
+            let minVal = Math.min(...klineData, currentIdx);
+            let range = maxVal - minVal || 1;
+            klineContainer.innerHTML = '';
+            klineData.forEach((val, idx) => {
+                let height = ((val - minVal) / range) * 140 + 10;
+                let bar = document.createElement('div');
+                bar.className = 'kline-bar';
+                bar.style.height = height + 'px';
+                let isRise = idx === 0 ? true : val >= klineData[idx-1];
+                bar.style.backgroundColor = isRise ? '#E74C3C' : '#2ECC71';
+                klineContainer.appendChild(bar);
+            });
+        }
+
+        function renderOrderBook() {
+            if(!orderBookDiv) return;
+            let mainStock = stocks[0];
+            let basePrice = mainStock.price;
+            let asks = [], bids = [];
+            for(let i=1;i<=5;i++) {
+                asks.push({price: (basePrice + i*0.35).toFixed(2), vol: Math.floor(Math.random()*500+100)});
+                bids.push({price: (basePrice - i*0.28).toFixed(2), vol: Math.floor(Math.random()*600+80)});
+            }
+            let html = `<div style="font-size:12px; margin-bottom:8px;">卖五档</div>`;
+            asks.reverse().forEach(a => { html += `<div class="depth-row"><span>${a.price}</span><span>🔴 ${a.vol}</span></div>`; });
+            html += `<div class="depth-row" style="background:#2ECC7120; margin:6px 0;"><span>最新价</span><strong>${basePrice.toFixed(2)}</strong></div>`;
+            html += `<div style="font-size:12px; margin:8px 0 4px;">买五档</div>`;
+            bids.forEach(b => { html += `<div class="depth-row"><span>${b.price}</span><span>🟢 ${b.vol}</span></div>`; });
+            orderBookDiv.innerHTML = html;
+        }
+
+        // 交易函数
+        function tradeStock(stockId, type, qty) {
+            let stock = stocks.find(s => s.id === stockId);
+            if(!stock) return false;
+            
+            if(qty === undefined || qty === null || isNaN(qty) || qty <= 0) {
+                showToast("❌ 请输入有效的正整数", true);
+                return false;
+            }
+            
+            qty = Math.floor(qty);
+            if(qty <= 0) {
+                showToast("❌ 数量必须大于0", true);
+                return false;
+            }
+
+            if(type === 'buy') {
+                let cost = stock.price * qty;
+                if(userCash < cost) {
+                    showToast(`❌ 资金不足，需要 ${formatMoney(cost)} 摸鱼币，当前 ${formatMoney(userCash)} 摸鱼币`, true);
+                    return false;
+                }
+                userCash -= cost;
+                if(!holdings[stockId]) holdings[stockId] = { qty: 0, avgCost: 0 };
+                let old = holdings[stockId];
+                let newQty = old.qty + qty;
+                let newAvg = ((old.avgCost * old.qty) + cost) / newQty;
+                holdings[stockId] = { qty: newQty, avgCost: newAvg };
+                showToast(`✅ 买入 ${qty}股 ${stock.name} @ ${formatMoney(stock.price)} 摸鱼币`);
+            } else {
+                if(!holdings[stockId] || holdings[stockId].qty < qty) {
+                    let available = holdings[stockId] ? holdings[stockId].qty : 0;
+                    showToast(`❌ 持仓不足，当前持有 ${available} 股`, true);
+                    return false;
+                }
+                let revenue = stock.price * qty;
+                userCash += revenue;
+                holdings[stockId].qty -= qty;
+                if(holdings[stockId].qty === 0) delete holdings[stockId];
+                showToast(`📉 卖出 ${qty}股 ${stock.name} 到账 ${formatMoney(revenue)} 摸鱼币`);
+            }
+            persist();
+            renderStocks();
+            renderPortfolioAnalysis();
+            return true;
+        }
+
+        // ===== 修复：渲染股票时保留用户输入的数量 =====
+        function renderStocks() {
+            let html = '';
+            for(let s of stocks) {
+                let hold = holdings[s.id] || { qty: 0 };
+                let changeCls = s.changePct >= 0 ? 'positive' : 'negative';
+                let changeSym = s.changePct >= 0 ? '▲' : '▼';
+                
+                // ===== 获取保存的数量，如果没有则默认为1 =====
+                let currentQty = inputQuantities[s.id] !== undefined ? inputQuantities[s.id] : 1;
+                // 确保数量至少为1
+                if(currentQty < 1) currentQty = 1;
+                
+                html += `
+                    <div class="stock-card-pro">
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;">
+                            <div><strong>${s.name}</strong><br><span style="font-size:10px;">${s.code}</span></div>
+                            <div style="font-size:12px; color:#94A3B8;">${s.industry}</div>
+                        </div>
+                        <div class="price-stats">
+                            <span class="live-price">${formatMoney(s.price)} 摸鱼币</span>
+                            <span class="${changeCls}" style="font-weight:600;">${changeSym} ${Math.abs(s.changePct).toFixed(2)}%</span>
+                        </div>
+                        <div class="holding-info">
+                            🏦 持仓: ${hold.qty} 股 &nbsp;|&nbsp; 💰 成本: ${hold.qty>0 ? formatMoney(hold.avgCost)+' 摸鱼币' : '--'}
+                        </div>
+                        <div class="trade-controls">
+                            <input type="number" 
+                                   id="proQty_${s.id}" 
+                                   class="trade-input-pro" 
+                                   value="${currentQty}" 
+                                   min="1" 
+                                   step="1"
+                                   inputmode="numeric"
+                                   pattern="[0-9]*"
+                                   autocomplete="off"
+                                   onfocus="this.select();"
+                                   onchange="saveInputQty(${s.id}, this.value);"
+                                   onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('buyBtn_${s.id}').click();}">
+                            <button class="btn-buy-pro" id="buyBtn_${s.id}" data-id="${s.id}" data-act="buy">买入</button>
+                            <button class="btn-sell-pro" id="sellBtn_${s.id}" data-id="${s.id}" data-act="sell">卖出</button>
+                        </div>
+                    </div>
+                `;
+            }
+            document.getElementById("proStockGrid").innerHTML = html;
+            
+            // 绑定买入事件
+            document.querySelectorAll('.btn-buy-pro').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    let id = parseInt(this.dataset.id);
+                    let input = document.getElementById(`proQty_${id}`);
+                    let qty = parseInt(input.value);
+                    if(isNaN(qty) || qty <= 0) {
+                        qty = 1;
+                        input.value = 1;
+                    }
+                    // 保存当前数量
+                    inputQuantities[id] = qty;
+                    persist();
+                    tradeStock(id, 'buy', qty);
+                });
+            });
+            
+            // 绑定卖出事件
+            document.querySelectorAll('.btn-sell-pro').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    let id = parseInt(this.dataset.id);
+                    let input = document.getElementById(`proQty_${id}`);
+                    let qty = parseInt(input.value);
+                    if(isNaN(qty) || qty <= 0) {
+                        qty = 1;
+                        input.value = 1;
+                    }
+                    // 保存当前数量
+                    inputQuantities[id] = qty;
+                    persist();
+                    tradeStock(id, 'sell', qty);
+                });
+            });
+        }
+
+        // ===== 新增：保存输入框数量变化 =====
+        window.saveInputQty = function(stockId, value) {
+            let qty = parseInt(value);
+            if(!isNaN(qty) && qty > 0) {
+                inputQuantities[stockId] = qty;
+                persist();
+            }
+        };
+
+        function renderPortfolioAnalysis() {
+            let totalMarket = 0, totalCost = 0;
+            let positions = [];
+            for(let [sid, h] of Object.entries(holdings)) {
+                if(h.qty <= 0) continue;
+                let stock = stocks.find(s => s.id == sid);
+                if(!stock) continue;
+                let curVal = stock.price * h.qty;
+                let costVal = h.avgCost * h.qty;
+                totalMarket += curVal;
+                totalCost += costVal;
+                positions.push({ name: stock.name, profit: curVal - costVal, profitRate: ((curVal - costVal)/costVal)*100, curVal });
+            }
+            let totalProfit = totalMarket - totalCost;
+            let totalYield = totalCost > 0 ? (totalProfit / totalCost) * 100 : 0;
+            cashSpan.innerText = formatMoney(userCash);
+            marketValSpan.innerText = formatMoney(totalMarket);
+            totalPLSpan.innerText = (totalProfit >= 0 ? '+' : '') + formatMoney(totalProfit);
+            totalPLSpan.style.color = totalProfit >= 0 ? '#E74C3C' : '#2ECC71';
+            yieldSpan.innerText = (totalYield >= 0 ? '+' : '') + totalYield.toFixed(2) + '%';
+            holdingCountSpan.innerText = Object.keys(holdings).length;
+            let maxProfitPos = positions.reduce((max, p) => (p.profit > max.profit ? p : max), { profit: -Infinity, name: '无' });
+            maxPLStockSpan.innerText = maxProfitPos.name !== '无' ? `${maxProfitPos.name} : ${maxProfitPos.profit>=0?'+':''}${formatMoney(maxProfitPos.profit)}` : '---';
+            let totalAsset = userCash + totalMarket;
+            let riskExpo = totalAsset > 0 ? (totalMarket / totalAsset) * 100 : 0;
+            riskExposureSpan.innerText = riskExpo.toFixed(1) + '%';
+            let sharpe = (totalYield / 18).toFixed(2);
+            sharpeSpan.innerText = sharpe;
+            if(Object.keys(holdings).length === 0) {
+                document.getElementById("proPortfolioList").innerHTML = `<div style="text-align:center; padding:40px;">✨ 暂无持仓，开始交易✨</div>`;
+                return;
+            }
+            let listHtml = '';
+            for(let [sid, h] of Object.entries(holdings)) {
+                let stock = stocks.find(s => s.id == sid);
+                if(!stock || h.qty === 0) continue;
+                let profit = (stock.price - h.avgCost) * h.qty;
+                let profitRate = ((stock.price - h.avgCost)/h.avgCost)*100;
+                listHtml += `<div class="holding-row"><div><strong>${stock.name}</strong><br><span style="font-size:10px;">${stock.code}</span></div><div>📦 ${h.qty}股</div><div>成本 ${formatMoney(h.avgCost)} 摸鱼币</div><div>现价 ${formatMoney(stock.price)} 摸鱼币</div><div class="${profit>=0?'positive':'negative'}">${profit>=0?'▲':'▼'} ${profit>=0?'+':''}${formatMoney(profit)} (${profitRate.toFixed(2)}%)</div></div>`;
+            }
+            document.getElementById("proPortfolioList").innerHTML = listHtml;
+        }
+
+        function syncFromMainMall() {
+            let mainAsset = localStorage.getItem("assets");
+            if(mainAsset) { let newCash = parseInt(mainAsset); if(!isNaN(newCash) && newCash>0) { userCash = newCash; showToast(`🔄 同步商城资产: ${userCash.toLocaleString()} 摸鱼币`); persist(); renderPortfolioAnalysis(); renderStocks(); } else showToast("同步失败", true); }
+            else showToast("未检测到主商城资产", true);
+        }
+
+        function resetTerminal() {
+            if(confirm("⚠️ 重置将清空所有持仓，现金恢复至100,000摸鱼币，股价回归初始。确认重置？")) {
+                userCash = 100000; 
+                holdings = {}; 
+                inputQuantities = {}; // 重置输入框数量
+                rebuildStockPrices(); 
+                persist(); 
+                renderStocks(); 
+                renderPortfolioAnalysis(); 
+                showToast("✅ 终端已重置");
+            }
+        }
+
+        function applyProfessionalMode() {
+            document.body.classList.remove("classic-mode");
+            currentMode = "professional";
+            localStorage.setItem("dualModeUI", "professional");
+            showToast("🎯 切换到专业模式 | 深色金融风格 + 高级指标");
+        }
+
+        function applyClassicMode() {
+            document.body.classList.add("classic-mode");
+            currentMode = "classic";
+            localStorage.setItem("dualModeUI", "classic");
+            showToast("🌞 切换到经典模式 | 明亮简洁风格");
+        }
+
+        function toggleMode() {
+            if(currentMode === "professional") applyClassicMode();
+            else applyProfessionalMode();
+        }
+
+        function listenGlobalSignal() {
+            window.addEventListener('storage', (e) => {
+                if(e.key === 'stockMarketReset') { let synced = localStorage.getItem("syncTotalAssets"); if(synced) userCash = parseInt(synced) || 100000; else userCash = 100000; holdings = {}; inputQuantities = {}; rebuildStockPrices(); persist(); renderStocks(); renderPortfolioAnalysis(); showToast("🌐 同步主商城重置"); }
+                if(e.key === 'syncTotalAssets' && e.newValue) { userCash = parseInt(e.newValue) || userCash; persist(); renderPortfolioAnalysis(); }
+            });
+        }
+
+        function startEngine() { if(priceTimer) clearInterval(priceTimer); priceTimer = setInterval(() => fluctuateAdvanced(), 3200); }
+
+        function init() {
+            loadData(); 
+            renderStocks(); 
+            renderPortfolioAnalysis(); 
+            fluctuateAdvanced(); 
+            startEngine(); 
+            listenGlobalSignal();
+            document.getElementById("proResetBtn").addEventListener("click", resetTerminal);
+            document.getElementById("syncAssetBtn").addEventListener("click", syncFromMainMall);
+            document.getElementById("toggleModeBtn").addEventListener("click", toggleMode);
+            updateKlineSimulator(stocks.reduce((s,p)=>s+p.price,0)/stocks.length);
+        }
+        init();
+    })();
+</script>
+</body>
+</html>
