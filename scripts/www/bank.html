@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>摸鱼银行 · 存钱罐 | 摸鱼商超</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(145deg, #0B1622 0%, #0F212F 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* 主卡片 */
+        .bank-card {
+            background: rgba(15, 25, 45, 0.75);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 28px 24px 32px;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        /* 头部 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo-area h1 {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FACC15, #2ECC71);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo-area p {
+            font-size: 11px;
+            color: #94A3B8;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(46,204,113,0.3);
+            padding: 8px 18px;
+            border-radius: 40px;
+            color: #2ECC71;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .back-btn:hover {
+            background: rgba(46,204,113,0.2);
+            transform: translateY(-1px);
+        }
+
+        /* 余额卡片 - 修复数字溢出问题 */
+        .balance-card {
+            background: linear-gradient(135deg, #1E293B, #0F172A);
+            border-radius: 36px;
+            padding: 24px;
+            margin-bottom: 28px;
+            border: 1px solid #2D3A5E;
+            text-align: center;
+            overflow: hidden;
+        }
+        .balance-label {
+            font-size: 14px;
+            color: #94A3B8;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+        .balance-amount-wrapper {
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding: 4px 0;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+        }
+        .balance-amount {
+            font-size: 42px;
+            font-weight: 800;
+            color: #FACC15;
+            font-family: monospace;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+        /* 针对极小屏幕调整字体大小 */
+        @media (max-width: 450px) {
+            .balance-amount { font-size: 32px; }
+        }
+        @media (max-width: 380px) {
+            .balance-amount { font-size: 26px; }
+        }
+        .balance-sub {
+            font-size: 12px;
+            color: #5B6E8C;
+            margin-top: 8px;
+        }
+
+        /* 快捷操作按钮组 */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .action-btn {
+            flex: 1;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #2D3A5E;
+            border-radius: 32px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .action-btn:hover {
+            background: rgba(46, 204, 113, 0.15);
+            border-color: #2ECC71;
+            transform: translateY(-2px);
+        }
+        .action-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .action-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #E2E8F0;
+        }
+        .action-desc {
+            font-size: 11px;
+            color: #94A3B8;
+            margin-top: 4px;
+        }
+
+        /* 表单区域 */
+        .form-card {
+            background: #0F172A;
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid #1E293B;
+        }
+        .form-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #FACC15;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .amount-input {
+            width: 100%;
+            background: #020617;
+            border: 1px solid #2D3A5E;
+            border-radius: 48px;
+            padding: 14px 20px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #FACC15;
+            text-align: center;
+            outline: none;
+            margin-bottom: 16px;
+        }
+        .amount-input:focus {
+            border-color: #2ECC71;
+            box-shadow: 0 0 0 2px rgba(46,204,113,0.2);
+        }
+        .confirm-btn {
+            width: 100%;
+            background: linear-gradient(95deg, #2ECC71, #27AE60);
+            border: none;
+            padding: 14px;
+            border-radius: 48px;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .confirm-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* 交易记录 */
+        .records-card {
+            background: #0F172A;
+            border-radius: 28px;
+            padding: 20px;
+            border: 1px solid #1E293B;
+        }
+        .records-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #1E293B;
+        }
+        .records-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #CBD5E1;
+        }
+        .clear-btn {
+            background: none;
+            border: none;
+            color: #EF4444;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: rgba(239,68,68,0.1);
+        }
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #1E293B;
+        }
+        .record-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            min-width: 0;
+        }
+        .record-type {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .record-type.deposit { color: #2ECC71; }
+        .record-type.withdraw { color: #EF4444; }
+        .record-time {
+            font-size: 10px;
+            color: #64748B;
+        }
+        .record-amount {
+            font-weight: 700;
+            font-size: 15px;
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+        .record-amount.deposit { color: #2ECC71; }
+        .record-amount.withdraw { color: #EF4444; }
+        .empty-records {
+            text-align: center;
+            padding: 32px;
+            color: #64748B;
+            font-size: 13px;
+        }
+
+        /* 提示框 */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1E293B;
+            backdrop-filter: blur(20px);
+            border: 1px solid #FACC15;
+            color: #FACC15;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 1000;
+            animation: fadeUp 0.3s forwards;
+        }
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 11px;
+            color: #475569;
+            margin-top: 20px;
+        }
+        
+        /* 滚动条美化 */
+        .balance-amount-wrapper::-webkit-scrollbar {
+            height: 3px;
+        }
+        .balance-amount-wrapper::-webkit-scrollbar-track {
+            background: #1E293B;
+            border-radius: 10px;
+        }
+        .balance-amount-wrapper::-webkit-scrollbar-thumb {
+            background: #FACC15;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="bank-card">
+        <div class="header">
+            <div class="logo-area">
+                <h1>🏦 摸鱼银行</h1>
+                <p>存钱罐 · 安全存储</p>
+            </div>
+            <a href="moyu.html" class="back-btn">← 返回商城</a>
+        </div>
+
+        <!-- 余额展示 - 修复数字溢出 -->
+        <div class="balance-card">
+            <div class="balance-label">🐟 存钱罐余额</div>
+            <div class="balance-amount-wrapper" id="balanceScrollWrapper">
+                <div class="balance-amount" id="bankBalance">0 摸鱼币</div>
+            </div>
+            <div class="balance-sub">+ 每天产生 0.01% 利息 (次日结算)</div>
+        </div>
+
+        <!-- 快捷操作 -->
+        <div class="action-buttons">
+            <div class="action-btn" id="showDepositPanel">
+                <div class="action-icon">📥</div>
+                <div class="action-label">存入摸鱼币</div>
+                <div class="action-desc">从商城转入银行</div>
+            </div>
+            <div class="action-btn" id="showWithdrawPanel">
+                <div class="action-icon">📤</div>
+                <div class="action-label">取出摸鱼币</div>
+                <div class="action-desc">从银行转回商城</div>
+            </div>
+        </div>
+
+        <!-- 存入表单 -->
+        <div id="depositForm" class="form-card" style="display: none;">
+            <div class="form-title">🐟 存入摸鱼币</div>
+            <input type="number" id="depositAmount" class="amount-input" placeholder="输入数量" step="0.01" min="0.01">
+            <div style="font-size: 12px; color: #94A3B8; text-align: center; margin-bottom: 12px;">
+                当前商城资产: <span id="currentAssetDisplay">0</span> 摸鱼币
+            </div>
+            <button class="confirm-btn" id="confirmDepositBtn">确认存入</button>
+        </div>
+
+        <!-- 取出表单 -->
+        <div id="withdrawForm" class="form-card" style="display: none;">
+            <div class="form-title">🐟 取出摸鱼币</div>
+            <input type="number" id="withdrawAmount" class="amount-input" placeholder="输入数量" step="0.01" min="0.01">
+            <div style="font-size: 12px; color: #94A3B8; text-align: center; margin-bottom: 12px;">
+                存钱罐余额: <span id="bankBalanceHint">0</span> 摸鱼币
+            </div>
+            <button class="confirm-btn" id="confirmWithdrawBtn">确认取出</button>
+        </div>
+
+        <!-- 交易记录 -->
+        <div class="records-card">
+            <div class="records-header">
+                <span class="records-title">📋 交易流水</span>
+                <button class="clear-btn" id="clearRecordsBtn">清空记录</button>
+            </div>
+            <div id="recordsList">
+                <div class="empty-records">暂无交易记录</div>
+            </div>
+        </div>
+    </div>
+    <footer>💡 资金与摸鱼商超实时同步 | 每日利息自动发放 | 安全可靠</footer>
+</div>
+
+<script>
+    (function(){
+        // ==================== 配置 ====================
+        const STORAGE_BANK_BALANCE = "bank_balance";
+        const STORAGE_BANK_RECORDS = "bank_records";
+        const STORAGE_LAST_INTEREST_DATE = "bank_last_interest_date";
+        const INTEREST_RATE = 0.0001; // 0.01% 日利率
+        
+        let bankBalance = 0;
+        let bankRecords = [];
+        
+        // DOM 元素
+        const bankBalanceSpan = document.getElementById("bankBalance");
+        const currentAssetDisplay = document.getElementById("currentAssetDisplay");
+        const bankBalanceHint = document.getElementById("bankBalanceHint");
+        const depositForm = document.getElementById("depositForm");
+        const withdrawForm = document.getElementById("withdrawForm");
+        const depositAmountInput = document.getElementById("depositAmount");
+        const withdrawAmountInput = document.getElementById("withdrawAmount");
+        const recordsListDiv = document.getElementById("recordsList");
+        const balanceScrollWrapper = document.getElementById("balanceScrollWrapper");
+        
+        // 获取商城资产
+        function getMoyuAssets() {
+            let assets = localStorage.getItem("assets");
+            if (assets !== null && !isNaN(parseFloat(assets))) {
+                return parseFloat(assets);
+            }
+            return 1000;
+        }
+        
+        // 更新商城资产显示
+        function updateAssetDisplay() {
+            let assets = getMoyuAssets();
+            currentAssetDisplay.innerText = assets.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0});
+        }
+        
+        // 格式化数字显示（自动添加千分位，防止溢出）
+        function formatBalance(value) {
+            // 处理极大数字，显示为带两位小数的千分位格式
+            return value.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0}) + " 摸鱼币";
+        }
+        
+        // 更新银行余额显示（修复溢出：允许横向滚动）
+        function updateBankBalanceDisplay() {
+            const formatted = formatBalance(bankBalance);
+            bankBalanceSpan.innerText = formatted;
+            if (bankBalanceHint) bankBalanceHint.innerText = bankBalance.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0});
+            // 自动将滚动条滚动到最右边（让用户看到末尾数字）
+            if (balanceScrollWrapper) {
+                setTimeout(() => {
+                    balanceScrollWrapper.scrollLeft = balanceScrollWrapper.scrollWidth;
+                }, 10);
+            }
+        }
+        
+        // 保存银行余额
+        function saveBankBalance() {
+            localStorage.setItem(STORAGE_BANK_BALANCE, bankBalance.toString());
+        }
+        
+        // 加载银行余额
+        function loadBankBalance() {
+            let saved = localStorage.getItem(STORAGE_BANK_BALANCE);
+            if (saved !== null && !isNaN(parseFloat(saved))) {
+                bankBalance = parseFloat(saved);
+            } else {
+                bankBalance = 0;
+            }
+            updateBankBalanceDisplay();
+        }
+        
+        // 添加交易记录
+        function addRecord(type, amount, remark = "") {
+            const record = {
+                id: Date.now(),
+                type: type,
+                amount: amount,
+                remark: remark,
+                time: new Date().toLocaleString(),
+                balanceAfter: bankBalance
+            };
+            bankRecords.unshift(record);
+            if (bankRecords.length > 50) bankRecords = bankRecords.slice(0, 50);
+            saveBankRecords();
+            renderRecords();
+        }
+        
+        // 保存交易记录
+        function saveBankRecords() {
+            localStorage.setItem(STORAGE_BANK_RECORDS, JSON.stringify(bankRecords));
+        }
+        
+        // 加载交易记录
+        function loadBankRecords() {
+            let saved = localStorage.getItem(STORAGE_BANK_RECORDS);
+            if (saved) {
+                try {
+                    bankRecords = JSON.parse(saved);
+                } catch(e) { bankRecords = []; }
+            } else {
+                bankRecords = [];
+            }
+            renderRecords();
+        }
+        
+        // 渲染交易记录
+        function renderRecords() {
+            if (!recordsListDiv) return;
+            if (bankRecords.length === 0) {
+                recordsListDiv.innerHTML = '<div class="empty-records">✨ 暂无交易记录</div>';
+                return;
+            }
+            let html = "";
+            for (let rec of bankRecords) {
+                let typeClass = rec.type === "deposit" ? "deposit" : "withdraw";
+                let typeText = rec.type === "deposit" ? "存入" : "取出";
+                let sign = rec.type === "deposit" ? "+" : "-";
+                html += `
+                    <div class="record-item">
+                        <div class="record-info">
+                            <span class="record-type ${typeClass}">${typeText}</span>
+                            <span class="record-time">${rec.time}</span>
+                            ${rec.remark ? `<span style="font-size:10px; color:#64748B;">${rec.remark}</span>` : ''}
+                        </div>
+                        <div class="record-amount ${typeClass}">${sign} ${rec.amount.toLocaleString(undefined, {minimumFractionDigits:0})} 摸鱼币</div>
+                    </div>
+                `;
+            }
+            recordsListDiv.innerHTML = html;
+        }
+        
+        // 清空交易记录
+        function clearRecords() {
+            if (confirm("⚠️ 确定清空所有交易记录？此操作不可撤销，但不会影响余额。")) {
+                bankRecords = [];
+                saveBankRecords();
+                renderRecords();
+                showToast("✅ 交易记录已清空");
+            }
+        }
+        
+        // 存入资金
+        function depositToBank(amount) {
+            if (isNaN(amount) || amount <= 0) {
+                showToast("❌ 请输入有效数量");
+                return false;
+            }
+            let currentAssets = getMoyuAssets();
+            if (currentAssets < amount) {
+                showToast(`❌ 商城资产不足！当前仅 ${currentAssets.toLocaleString()} 摸鱼币`);
+                return false;
+            }
+            let newAssets = currentAssets - amount;
+            localStorage.setItem("assets", newAssets);
+            bankBalance += amount;
+            saveBankBalance();
+            updateBankBalanceDisplay();
+            updateAssetDisplay();
+            addRecord("deposit", amount, "从商城转入");
+            showToast(`✅ 成功存入 ${amount.toLocaleString()} 摸鱼币到存钱罐`);
+            localStorage.setItem("syncTotalAssets", newAssets);
+            window.dispatchEvent(new StorageEvent('storage', { key: 'assets', newValue: newAssets.toString() }));
+            return true;
+        }
+        
+        // 取出资金
+        function withdrawFromBank(amount) {
+            if (isNaN(amount) || amount <= 0) {
+                showToast("❌ 请输入有效数量");
+                return false;
+            }
+            if (bankBalance < amount) {
+                showToast(`❌ 存钱罐余额不足！当前存款 ${bankBalance.toLocaleString()} 摸鱼币`);
+                return false;
+            }
+            bankBalance -= amount;
+            saveBankBalance();
+            let currentAssets = getMoyuAssets();
+            let newAssets = currentAssets + amount;
+            localStorage.setItem("assets", newAssets);
+            updateBankBalanceDisplay();
+            updateAssetDisplay();
+            addRecord("withdraw", amount, "转回商城");
+            showToast(`✅ 成功取出 ${amount.toLocaleString()} 摸鱼币到商城`);
+            localStorage.setItem("syncTotalAssets", newAssets);
+            window.dispatchEvent(new StorageEvent('storage', { key: 'assets', newValue: newAssets.toString() }));
+            return true;
+        }
+        
+        // 每日利息
+        function checkAndGrantInterest() {
+            let lastDateStr = localStorage.getItem(STORAGE_LAST_INTEREST_DATE);
+            let today = new Date().toDateString();
+            if (lastDateStr === today) return;
+            if (bankBalance > 0) {
+                let interest = bankBalance * INTEREST_RATE;
+                if (interest > 0) {
+                    interest = Math.floor(interest * 100) / 100;
+                    if (interest > 0) {
+                        bankBalance += interest;
+                        saveBankBalance();
+                        updateBankBalanceDisplay();
+                        bankRecords.unshift({
+                            id: Date.now(),
+                            type: "deposit",
+                            amount: interest,
+                            remark: "💰 存钱罐每日利息",
+                            time: new Date().toLocaleString(),
+                            balanceAfter: bankBalance
+                        });
+                        if (bankRecords.length > 50) bankRecords = bankRecords.slice(0, 50);
+                        saveBankRecords();
+                        renderRecords();
+                        showToast(`✨ 存钱罐利息到账！获得 ${interest.toLocaleString()} 摸鱼币`);
+                    }
+                }
+            }
+            localStorage.setItem(STORAGE_LAST_INTEREST_DATE, today);
+        }
+        
+        function showToast(msg) {
+            let toast = document.createElement("div");
+            toast.className = "toast";
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+        
+        // UI 切换
+        function showDepositPanel() {
+            depositForm.style.display = "block";
+            withdrawForm.style.display = "none";
+            depositAmountInput.value = "";
+            updateAssetDisplay();
+        }
+        
+        function showWithdrawPanel() {
+            withdrawForm.style.display = "block";
+            depositForm.style.display = "none";
+            withdrawAmountInput.value = "";
+            updateBankBalanceDisplay();
+        }
+        
+        function hideForms() {
+            depositForm.style.display = "none";
+            withdrawForm.style.display = "none";
+        }
+        
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'assets') updateAssetDisplay();
+        });
+        
+        document.getElementById("showDepositPanel").addEventListener("click", showDepositPanel);
+        document.getElementById("showWithdrawPanel").addEventListener("click", showWithdrawPanel);
+        document.getElementById("confirmDepositBtn").addEventListener("click", () => {
+            let amount = parseFloat(depositAmountInput.value);
+            if (!isNaN(amount) && amount > 0) {
+                depositToBank(amount);
+                depositAmountInput.value = "";
+            } else {
+                showToast("请输入大于0的数量");
+            }
+        });
+        document.getElementById("confirmWithdrawBtn").addEventListener("click", () => {
+            let amount = parseFloat(withdrawAmountInput.value);
+            if (!isNaN(amount) && amount > 0) {
+                withdrawFromBank(amount);
+                withdrawAmountInput.value = "";
+            } else {
+                showToast("请输入大于0的数量");
+            }
+        });
+        document.getElementById("clearRecordsBtn").addEventListener("click", clearRecords);
+        
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest(".action-btn") && !e.target.closest(".form-card") && !e.target.closest(".confirm-btn")) {
+                hideForms();
+            }
+        });
+        
+        loadBankBalance();
+        loadBankRecords();
+        updateAssetDisplay();
+        checkAndGrantInterest();
+        
+        setInterval(() => checkAndGrantInterest(), 3600000);
+        window.addEventListener("focus", () => {
+            checkAndGrantInterest();
+            updateAssetDisplay();
+            updateBankBalanceDisplay();
+        });
+        setInterval(() => updateAssetDisplay(), 5000);
+        hideForms();
+    })();
+</script>
+</body>
+</html>
