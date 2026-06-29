@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>PS练习 · 项目7.2 素材下载</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: #0f0f1a;
+            min-height: 100vh;
+            padding: 16px;
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===== 顶部导航 ===== */
+        .top-nav {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .top-nav .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .top-nav .logo-area .icon {
+            font-size: 32px;
+        }
+
+        .top-nav .logo-area .title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .top-nav .logo-area .title span {
+            color: #facc15;
+        }
+
+        .top-nav .logo-area .sub {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .top-nav .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn:active { transform: scale(0.94); }
+
+        .btn-photopea {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+        }
+        .btn-photopea:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(102,126,234,0.4); }
+
+        .btn-download-all {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(245,158,11,0.3);
+        }
+        .btn-download-all:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(245,158,11,0.4); }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.06);
+            color: #94a3b8;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+        /* ===== 项目信息 ===== */
+        .project-banner {
+            background: linear-gradient(135deg, #1e1e3a, #2d1b4e);
+            border-radius: 16px;
+            padding: 18px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid rgba(250,204,21,0.1);
+        }
+
+        .project-banner .info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .project-banner .info .badge {
+            background: rgba(250,204,21,0.15);
+            color: #facc15;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .project-banner .info .desc {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .project-banner .info .desc strong {
+            color: #e2e8f0;
+        }
+
+        .project-banner .stats {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .project-banner .stats strong {
+            color: #facc15;
+        }
+
+        /* ===== 提示 ===== */
+        .tip-box {
+            background: rgba(250,204,21,0.05);
+            border: 1px solid rgba(250,204,21,0.1);
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .tip-box .icon { font-size: 22px; }
+        .tip-box .text { font-size: 13px; color: #94a3b8; line-height: 1.6; }
+        .tip-box .text strong { color: #facc15; }
+
+        /* ===== 区域标题 ===== */
+        .section-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .tag {
+            background: rgba(250,204,21,0.12);
+            color: #facc15;
+            font-size: 11px;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-weight: 400;
+        }
+
+        /* ===== 网格 ===== */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .effect-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        /* ===== 卡片 ===== */
+        .card {
+            background: #1a1a30;
+            border-radius: 14px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(250,204,21,0.15);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+
+        .card .preview {
+            height: 150px;
+            background: #0f0f20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .card .preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 10px;
+        }
+
+        .card .preview .file-type {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .card .preview .zoom-hint {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        .card .info {
+            padding: 12px 14px 14px;
+        }
+
+        .card .info .name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .card .info .desc {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        .card .info .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .card .info .actions .btn-sm {
+            padding: 5px 14px;
+            font-size: 12px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,255,255,0.05);
+            color: #94a3b8;
+        }
+
+        .card .info .actions .btn-sm:hover {
+            background: rgba(255,255,255,0.1);
+            color: #e2e8f0;
+        }
+
+        .card .info .actions .btn-sm.download {
+            background: rgba(59,130,246,0.15);
+            color: #60a5fa;
+        }
+        .card .info .actions .btn-sm.download:hover {
+            background: rgba(59,130,246,0.25);
+            color: #93bbfc;
+        }
+
+        .card .info .actions .btn-sm.preview-btn {
+            background: rgba(250,204,21,0.08);
+            color: #facc15;
+        }
+        .card .info .actions .btn-sm.preview-btn:hover {
+            background: rgba(250,204,21,0.18);
+        }
+
+        /* ===== 效果图卡片 ===== */
+        .effect-card {
+            background: #1a1a30;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .effect-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(250,204,21,0.12);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+
+        .effect-card .preview {
+            height: 200px;
+            background: #0f0f20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .effect-card .preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 8px;
+        }
+
+        .effect-card .preview .badge-gif {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(239,68,68,0.8);
+            backdrop-filter: blur(4px);
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .effect-card .preview .zoom-hint {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        .effect-card .info {
+            padding: 12px 16px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .effect-card .info .name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .effect-card .info .name .sub {
+            font-weight: 400;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .effect-card .info .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .effect-card .info .actions .btn-sm {
+            padding: 5px 14px;
+            font-size: 12px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,255,255,0.05);
+            color: #94a3b8;
+        }
+
+        .effect-card .info .actions .btn-sm:hover {
+            background: rgba(255,255,255,0.1);
+            color: #e2e8f0;
+        }
+
+        .effect-card .info .actions .btn-sm.download {
+            background: rgba(59,130,246,0.15);
+            color: #60a5fa;
+        }
+        .effect-card .info .actions .btn-sm.download:hover {
+            background: rgba(59,130,246,0.25);
+            color: #93bbfc;
+        }
+
+        .effect-card .info .actions .btn-sm.preview-btn {
+            background: rgba(250,204,21,0.08);
+            color: #facc15;
+        }
+        .effect-card .info .actions .btn-sm.preview-btn:hover {
+            background: rgba(250,204,21,0.18);
+        }
+
+        /* ===== Toast ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid rgba(255,255,255,0.06);
+            pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .top-nav { padding: 14px 16px; flex-direction: column; align-items: stretch; text-align: center; }
+            .top-nav .logo-area { justify-content: center; flex-wrap: wrap; }
+            .top-nav .actions { justify-content: center; }
+            .btn { padding: 6px 14px; font-size: 12px; }
+            .project-banner { padding: 14px 16px; flex-direction: column; text-align: center; }
+            .project-banner .info { justify-content: center; }
+            .project-banner .stats { justify-content: center; }
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .effect-grid { grid-template-columns: 1fr; }
+            .card .preview { height: 120px; }
+            .effect-card .preview { height: 160px; }
+            .tip-box { flex-direction: column; text-align: center; }
+        }
+
+        @media (max-width: 480px) {
+            .grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .card .info .actions .btn-sm { font-size: 10px; padding: 4px 8px; }
+            .card .info .name { font-size: 12px; }
+            .top-nav .logo-area .title { font-size: 17px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- ===== 顶部导航 ===== -->
+    <nav class="top-nav">
+        <div class="logo-area">
+            <span class="icon">🎨</span>
+            <div>
+                <div class="title">PS 练习 · <span>项目 7.2</span></div>
+                <div class="sub">素材下载 · 图形图像处理</div>
+            </div>
+        </div>
+        <div class="actions">
+            <a href="https://www.photopea.com/" target="_blank" class="btn btn-photopea">
+                🚀 打开 Photopea
+            </a>
+            <button class="btn btn-download-all" id="downloadAllBtn">
+                ⬇️ 下载全部
+            </button>
+            <button class="btn btn-secondary" id="backBtn">🏠 返回</button>
+        </div>
+    </nav>
+
+    <!-- ===== 项目信息 ===== -->
+    <div class="project-banner">
+        <div class="info">
+            <span class="badge">📁 项目 7.2</span>
+            <span class="desc"><strong>Photoshop 综合练习</strong> · 使用提供的素材完成效果图</span>
+        </div>
+        <div class="stats">
+            <span>📦 素材: <strong id="materialCount">0</strong></span>
+            <span>🖼️ 效果图: <strong>2</strong></span>
+        </div>
+    </div>
+
+    <!-- ===== 提示 ===== -->
+    <div class="tip-box">
+        <span class="icon">💡</span>
+        <div class="text">
+            <strong>使用说明：</strong>
+            下载素材文件 (01.png, 02.png, 03.png)，
+            参考效果图 (1.png, 2.gif) 进行 Photoshop 练习。
+            点击 <strong>「打开 Photopea」</strong> 可直接在浏览器中使用 PS 网页版！
+            点击图片可 <strong>预览大图</strong>。
+        </div>
+    </div>
+
+    <!-- ===== 素材区域 ===== -->
+    <div class="section-title">
+        📂 素材文件
+        <span class="tag">点击下载</span>
+    </div>
+    <div class="grid" id="materialGrid"></div>
+
+    <!-- ===== 效果图区域 ===== -->
+    <div class="section-title">
+        🖼️ 效果图参考
+        <span class="tag">练习目标</span>
+    </div>
+    <div class="effect-grid" id="effectGrid"></div>
+
+    <!-- ===== 底部 ===== -->
+    <div style="text-align:center; padding:16px 0 8px; color:#475569; font-size:12px; border-top:1px solid rgba(255,255,255,0.04);">
+        🎨 素材仅供练习使用 · 项目 7.2
+    </div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+    // ==================== 配置 ====================
+    // ⚠️ 请将下面的图片链接替换为你的实际图片链接
+    const IMAGE_BASE_URL = ''; // 如果图片在同级目录，留空即可
+    // 如果图片在子文件夹，例如 images/，则填写 'images/'
+    // 如果使用 CDN，填写完整 URL，例如 'https://your-cdn.com/ps-project/'
+
+    // 素材列表（使用你的图片文件名）
+    const materials = [
+        { id: '01', fileName: '01.png', desc: '背景素材 · 天空与山峦' },
+        { id: '02', fileName: '02.png', desc: '主体素材 · 建筑与树木' },
+        { id: '03', fileName: '03.png', desc: '装饰素材 · 花草与云朵' }
+    ];
+
+    // 效果图列表（使用你的图片文件名）
+    const effects = [
+        { id: 'effect1', fileName: '1.png', desc: '最终效果参考图', isGif: false },
+        { id: 'effect2', fileName: '2.gif', desc: '动态效果参考图', isGif: true }
+    ];
+
+    // ==================== 构建图片URL ====================
+    function getImageUrl(fileName) {
+        // 如果设置了 BASE_URL，拼接前缀
+        if (IMAGE_BASE_URL) {
+            return IMAGE_BASE_URL + fileName;
+        }
+        // 否则直接使用文件名（同级目录）
+        return fileName;
+    }
+
+    // ==================== DOM ====================
+    const materialGrid = document.getElementById('materialGrid');
+    const effectGrid = document.getElementById('effectGrid');
+    const toast = document.getElementById('toast');
+    const materialCount = document.getElementById('materialCount');
+    const downloadAllBtn = document.getElementById('downloadAllBtn');
+    const backBtn = document.getElementById('backBtn');
+
+    let toastTimer = null;
+
+    // ==================== Toast ====================
+    function showToast(msg, isSuccess = true) {
+        if (toastTimer) {
+            clearTimeout(toastTimer);
+            toast.classList.remove('show');
+        }
+        void toast.offsetWidth;
+        toast.textContent = msg;
+        toast.style.borderColor = isSuccess ? 'rgba(46,204,113,0.3)' : 'rgba(239,68,68,0.3)';
+        toast.classList.add('show');
+        toastTimer = setTimeout(() => {
+            toast.classList.remove('show');
+            toastTimer = null;
+        }, 2500);
+    }
+
+    // ==================== 下载图片（真实图片） ====================
+    function downloadFile(fileName) {
+        const url = getImageUrl(fileName);
+        // 使用 fetch 下载真实图片
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('图片加载失败');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const link = document.createElement('a');
+                link.download = fileName;
+                link.href = URL.createObjectURL(blob);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+                showToast(`✅ 已下载: ${fileName}`);
+            })
+            .catch(() => {
+                // 如果 fetch 失败，尝试使用 canvas 生成占位图（备选方案）
+                showToast(`⚠️ 下载 ${fileName} 失败，请检查图片路径`, false);
+                // 作为备选，使用 canvas 生成
+                generateFallbackImage(fileName);
+            });
+    }
+
+    // ==================== 备选方案：生成占位图 ====================
+    function generateFallbackImage(fileName) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 600;
+
+        const colors = {
+            '01.png': { bg: '#1a365d', accent: '#facc15', label: '01' },
+            '02.png': { bg: '#1e3a5f', accent: '#2ecc71', label: '02' },
+            '03.png': { bg: '#2d1b4e', accent: '#f59e0b', label: '03' },
+            '1.png': { bg: '#0f3460', accent: '#e94560', label: '效果图 1' },
+            '2.gif': { bg: '#16213e', accent: '#0f3460', label: '效果图 2' }
+        };
+
+        const config = colors[fileName] || { bg: '#1a1a2e', accent: '#facc15', label: fileName };
+
+        const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        grad.addColorStop(0, config.bg);
+        grad.addColorStop(1, '#0f0f20');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < canvas.width; i += 40) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, canvas.height);
+            ctx.stroke();
+        }
+        for (let i = 0; i < canvas.height; i += 40) {
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(canvas.width, i);
+            ctx.stroke();
+        }
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2 - 20, 120, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.05)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = config.accent;
+        ctx.font = 'bold 72px -apple-system, "PingFang SC", sans-serif';
+        ctx.fillText(config.label, canvas.width / 2, canvas.height / 2 - 20);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.font = '20px -apple-system, "PingFang SC", sans-serif';
+        ctx.fillText(fileName, canvas.width / 2, canvas.height / 2 + 80);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.font = '14px -apple-system, "PingFang SC", sans-serif';
+        ctx.fillText('PS 练习 · 项目7.2', canvas.width / 2, canvas.height - 30);
+
+        const link = document.createElement('a');
+        link.download = fileName;
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast(`✅ 已下载(备选): ${fileName}`);
+    }
+
+    // ==================== 预览大图 ====================
+    function previewImage(fileName) {
+        const url = getImageUrl(fileName);
+        // 在新窗口预览真实图片
+        const win = window.open('', '_blank', 'width=900,height=700');
+        if (win) {
+            win.document.write(`
+                <html>
+                <head>
+                    <title>预览: ${fileName}</title>
+                    <style>
+                        body { margin:0; display:flex; align-items:center; justify-content:center; background:#0a0a1a; min-height:100vh; }
+                        img { max-width:92%; max-height:92vh; border-radius:12px; box-shadow:0 8px 40px rgba(0,0,0,0.5); }
+                        .info { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); color:#94a3b8; font-size:13px; font-family:-apple-system,sans-serif; background:rgba(0,0,0,0.6); padding:6px 20px; border-radius:30px; backdrop-filter:blur(8px); }
+                    </style>
+                </head>
+                <body>
+                    <img src="${url}" alt="${fileName}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%231a1a2e%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%2394a3b8%22 font-family=%22sans-serif%22 font-size=%2220%22%3E图片加载失败%3C/text%3E%3C/svg%3E'">
+                    <div class="info">${fileName} · 点击关闭</div>
+                    <script>
+                        document.body.addEventListener('click', () => window.close());
+                        document.addEventListener('keydown', (e) => { if(e.key === 'Escape') window.close(); });
+                    <\/script>
+                </body>
+                </html>
+            `);
+            win.document.close();
+        } else {
+            showToast('⚠️ 请允许弹出窗口', false);
+        }
+    }
+
+    // ==================== 渲染素材 ====================
+    function renderMaterials() {
+        materialCount.textContent = materials.length;
+        materialGrid.innerHTML = materials.map(m => `
+            <div class="card">
+                <div class="preview" onclick="previewImage('${m.fileName}')">
+                    <img src="${getImageUrl(m.fileName)}" alt="${m.fileName}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22150%22%3E%3Crect fill=%22%231a1a2e%22 width=%22200%22 height=%22150%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%2394a3b8%22 font-family=%22sans-serif%22 font-size=%2216%22%3E${m.fileName}%3C/text%3E%3C/svg%3E'">
+                    <span class="file-type">PNG</span>
+                    <span class="zoom-hint">🔍 点击预览</span>
+                </div>
+                <div class="info">
+                    <div class="name">素材 ${m.id}</div>
+                    <div class="desc">${m.desc}</div>
+                    <div class="actions">
+                        <button class="btn-sm download" onclick="downloadFile('${m.fileName}')">⬇️ 下载</button>
+                        <button class="btn-sm preview-btn" onclick="previewImage('${m.fileName}')">👁️ 预览</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ==================== 渲染效果图 ====================
+    function renderEffects() {
+        effectGrid.innerHTML = effects.map(e => `
+            <div class="effect-card">
+                <div class="preview" onclick="previewImage('${e.fileName}')">
+                    <img src="${getImageUrl(e.fileName)}" alt="${e.fileName}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22200%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%2394a3b8%22 font-family=%22sans-serif%22 font-size=%2218%22%3E${e.fileName}%3C/text%3E%3C/svg%3E'">
+                    ${e.isGif ? '<span class="badge-gif">GIF</span>' : ''}
+                    <span class="zoom-hint">🔍 点击预览</span>
+                </div>
+                <div class="info">
+                    <span class="name">${e.fileName} <span class="sub">${e.desc}</span></span>
+                    <div class="actions">
+                        <button class="btn-sm download" onclick="downloadFile('${e.fileName}')">⬇️ 下载</button>
+                        <button class="btn-sm preview-btn" onclick="previewImage('${e.fileName}')">👁️ 预览</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ==================== 下载全部 ====================
+    function downloadAll() {
+        const allFiles = [...materials, ...effects];
+        let count = 0;
+        showToast(`⏳ 开始下载 ${allFiles.length} 个文件...`);
+        allFiles.forEach((item, index) => {
+            setTimeout(() => {
+                downloadFile(item.fileName);
+                count++;
+                if (count === allFiles.length) {
+                    // 已全部触发下载
+                }
+            }, index * 500);
+        });
+        // 延迟显示完成提示
+        setTimeout(() => {
+            showToast(`✅ 已开始下载 ${allFiles.length} 个文件`);
+        }, allFiles.length * 500 + 300);
+    }
+
+    // ==================== 返回 ====================
+    function goBack() {
+        if (document.referrer && document.referrer.includes(window.location.hostname)) {
+            window.history.back();
+        } else {
+            window.location.href = 'index.html';
+        }
+    }
+
+    // ==================== 事件绑定 ====================
+    downloadAllBtn.addEventListener('click', downloadAll);
+    backBtn.addEventListener('click', goBack);
+
+    // ==================== 键盘快捷键 ====================
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'd' && !e.ctrlKey && !e.metaKey) {
+            if (!e.target.closest('input, textarea, button')) {
+                downloadAll();
+            }
+        }
+        if (e.key === 'Escape') {
+            // 关闭预览窗口（由预览窗口自己处理）
+        }
+    });
+
+    // ==================== 初始化 ====================
+    renderMaterials();
+    renderEffects();
+
+    console.log('🎨 PS练习 · 项目7.2 已加载');
+    console.log(`📦 素材: ${materials.length} 个, 效果图: ${effects.length} 张`);
+    console.log('💡 快捷键: 按 D 键下载全部素材');
+    console.log('📁 图片路径前缀:', IMAGE_BASE_URL || '(同级目录)');
+</script>
+</body>
+</html>
